@@ -1,0 +1,695 @@
+F841 Local variable `bus` is assigned to but never used
+  --> src/semantic_context_server/application/dispatch/application_registry.py:53:9
+   |
+51 |         logger.info("ApplicationRegistry: wiring global administrative handlers")
+52 |
+53 |         bus = container.command_bus
+   |         ^^^
+54 |
+55 |         # Exemplo de wiring administrativo:
+   |
+help: Remove assignment to unused variable `bus`
+
+C901 `validate` is too complex (15 > 10)
+  --> src/semantic_context_server/application/dispatch/application_registry.py:74:9
+   |
+72 |         return self._events.get(name)
+73 |
+74 |     def validate(self):
+   |         ^^^^^^^^
+75 |         """
+76 |         Verifica se todos os comandos, queries e eventos registrados seguem
+   |
+
+B004 Using `hasattr(x, "__call__")` to test if x is callable is unreliable. Use `callable(x)` for consistent results.
+  --> src/semantic_context_server/application/dispatch/application_registry.py:86:65
+   |
+84 |                 # Verificamos se o handle ou o próprio __call__ é async.
+85 |                 # Aceita coroutine functions e async generator functions (yield).
+86 |                 target = getattr(cls, "handle", cls.__call__ if hasattr(cls, "__call__") else None)
+   |                                                                 ^^^^^^^^^^^^^^^^^^^^^^^^
+87 |                 if target and not (
+88 |                     inspect.iscoroutinefunction(target) or inspect.isasyncgenfunction(target)
+   |
+help: Replace with `callable()`
+
+SIM102 Use a single `if` statement instead of nested `if` statements
+   --> src/semantic_context_server/application/dispatch/application_registry.py:101:17
+    |
+100 |   …     method = getattr(adapter, attr_name)
+101 | / …     if callable(method):
+102 | | …         if not (
+103 | | …             inspect.iscoroutinefunction(method) or inspect.isasyncgenfunction(method)
+104 | | …         ):
+    | |____________^
+105 |   …             errors.append(
+106 |   …                 f"[Async Mandate Error] Storage Adapter '{name}': método público '{attr_name}' violou a governança e deve ser 'asyn…
+    |
+help: Combine `if` statements using `and`
+
+B007 Loop control variable `event_name` not used within loop body
+   --> src/semantic_context_server/application/dispatch/application_registry.py:109:13
+    |
+107 |                         )
+108 |
+109 |         for event_name, handler_classes in self._subscribers.items():
+    |             ^^^^^^^^^^
+110 |             for h_cls in handler_classes:
+111 |                 # 1. Determina o método alvo (handle ou __call__)
+    |
+help: Rename unused `event_name` to `_event_name`
+
+B004 Using `hasattr(x, "__call__")` to test if x is callable is unreliable. Use `callable(x)` for consistent results.
+   --> src/semantic_context_server/application/dispatch/application_registry.py:113:56
+    |
+111 |                 # 1. Determina o método alvo (handle ou __call__)
+112 |                 target = getattr(
+113 |                     h_cls, "handle", h_cls.__call__ if hasattr(h_cls, "__call__") else None
+    |                                                        ^^^^^^^^^^^^^^^^^^^^^^^^^^
+114 |                 )
+    |
+help: Replace with `callable()`
+
+SIM102 Use a single `if` statement instead of nested `if` statements
+  --> src/semantic_context_server/application/dispatch/router.py:76:9
+   |
+74 |           campaign_id = await self._get_campaign_id(ctx)
+75 |
+76 | /         if getattr(command_cls, "requires_campaign", False):
+77 | |             if not campaign_id:
+   | |_______________________________^
+78 |                   return self._error("⚠️ Nenhuma campanha ativa.")
+   |
+help: Combine `if` statements using `and`
+
+SIM118 Use `key in dict` instead of `key in dict.keys()`
+  --> src/semantic_context_server/application/queries/cache/query_cache.py:26:34
+   |
+24 |     async def invalidate_prefix(self, prefix: str):
+25 |         async with self._lock:
+26 |             to_delete = [key for key in self._cache.keys() if key.startswith(prefix)]
+   |                                  ^^^^^^^^^^^^^^^^^^^^^^^^^
+27 |
+28 |             for key in to_delete:
+   |
+help: Remove `.keys()`
+
+C901 `generate` is too complex (17 > 10)
+   --> src/semantic_context_server/application/services/llm/llm_service.py:120:15
+    |
+118 |     # ==========================================================
+119 |
+120 |     async def generate(self, request: LLMRequest) -> LLMResponse:
+    |               ^^^^^^^^
+121 |         if not request or not request.prompt:
+122 |             raise TypeError("LLMRequest must contain a prompt")
+    |
+
+C901 `append` is too complex (13 > 10)
+  --> src/semantic_context_server/application/services/memory_service.py:42:15
+   |
+40 |     # ==========================================================
+41 |
+42 |     async def append(self, text: str):
+   |               ^^^^^^
+43 |         # 1. Compressão via Executor para não travar o loop
+44 |         if self.executor:
+   |
+
+C901 `execute` is too complex (21 > 10)
+  --> src/semantic_context_server/application/usecases/narrative_event_usecase.py:63:15
+   |
+61 |     # ==========================================================
+62 |
+63 |     async def execute(self, campaign_id: str, action: str, user_id: str):
+   |               ^^^^^^^
+64 |         logger.info("🎭 Narrative execution started")
+   |
+
+C901 `execute` is too complex (12 > 10)
+  --> src/semantic_context_server/application/usecases/roll_dice_usecase.py:27:15
+   |
+25 |         self.enable_analysis = enable_analysis
+26 |
+27 |     async def execute(self, expression: Any) -> Response:
+   |               ^^^^^^^
+28 |         try:
+29 |             if isinstance(expression, DiceExpression):
+   |
+
+F841 Local variable `defaults` is assigned to but never used
+  --> src/semantic_context_server/config/loader.py:98:5
+   |
+96 | def _apply_profile_defaults(settings: Settings):
+97 |     """Mescla defaults de profile se não houver overrides explícitos."""
+98 |     defaults = get_profile_defaults(settings.runtime.profile)
+   |     ^^^^^^^^
+99 |     # Lógica de merge se necessário
+   |
+help: Remove assignment to unused variable `defaults`
+
+SIM105 Use `contextlib.suppress(Exception)` instead of `try`-`except`-`pass`
+  --> src/semantic_context_server/infrastructure/cache/base/base_cache.py:45:13
+   |
+44 |           if self._is_expired(ts, ttl):
+45 | /             try:
+46 | |                 await self.kv.delete(key)
+47 | |             except Exception:
+48 | |                 pass
+   | |____________________^
+49 |               return None
+   |
+help: Replace `try`-`except`-`pass` with `with contextlib.suppress(Exception): ...`
+
+SIM105 Use `contextlib.suppress(Exception)` instead of `try`-`except`-`pass`
+  --> src/semantic_context_server/infrastructure/cache/base/base_cache.py:66:9
+   |
+65 |       async def delete(self, key: str) -> None:
+66 | /         try:
+67 | |             await self.kv.delete(key)
+68 | |         except Exception:
+69 | |             pass
+   | |________________^
+70 |
+71 |       async def invalidate(self, key: str) -> None:
+   |
+help: Replace `try`-`except`-`pass` with `with contextlib.suppress(Exception): ...`
+
+SIM105 Use `contextlib.suppress(Exception)` instead of `try`-`except`-`pass`
+  --> src/semantic_context_server/infrastructure/cache/base/base_cache.py:76:13
+   |
+74 |       async def clear(self) -> None:
+75 |           if hasattr(self.kv, "clear"):
+76 | /             try:
+77 | |                 await self.kv.clear()
+78 | |             except Exception:
+79 | |                 pass
+   | |____________________^
+80 |
+81 |       async def exists(self, key: str) -> bool:
+   |
+help: Replace `try`-`except`-`pass` with `with contextlib.suppress(Exception): ...`
+
+SIM103 Return the condition `not self._is_expired(ts, ttl)` directly
+  --> src/semantic_context_server/infrastructure/cache/base/base_cache.py:92:9
+   |
+90 |               return False
+91 |
+92 | /         if self._is_expired(ts, ttl):
+93 | |             return False
+94 | |
+95 | |         return True
+   | |___________________^
+   |
+help: Replace with `return not self._is_expired(ts, ttl)`
+
+C901 `_hedged_search` is too complex (11 > 10)
+   --> src/semantic_context_server/infrastructure/rag/retrieval_engine.py:124:15
+    |
+122 |     # ---------------------------------------------------------
+123 |
+124 |     async def _hedged_search(self, index, query, q_vec, k):
+    |               ^^^^^^^^^^^^^^
+125 |         async def primary():
+126 |             return await self._execute_index(index, query, q_vec, k)
+    |
+
+SIM105 Use `contextlib.suppress(Exception)` instead of `try`-`except`-`pass`
+  --> src/semantic_context_server/infrastructure/rag/vector_writer_service.py:84:13
+   |
+82 |               self._queue.put_nowait(_SENTINEL)
+83 |           except asyncio.QueueFull:
+84 | /             try:
+85 | |                 self._queue.get_nowait()
+86 | |             except Exception:
+87 | |                 pass
+   | |____________________^
+88 |               try:
+89 |                   self._queue.put_nowait(_SENTINEL)
+   |
+help: Replace `try`-`except`-`pass` with `with contextlib.suppress(Exception): ...`
+
+SIM105 Use `contextlib.suppress(Exception)` instead of `try`-`except`-`pass`
+  --> src/semantic_context_server/infrastructure/rag/vector_writer_service.py:88:13
+   |
+86 |               except Exception:
+87 |                   pass
+88 | /             try:
+89 | |                 self._queue.put_nowait(_SENTINEL)
+90 | |             except Exception:
+91 | |                 pass
+   | |____________________^
+92 |
+93 |           if self._worker_task:
+   |
+help: Replace `try`-`except`-`pass` with `with contextlib.suppress(Exception): ...`
+
+SIM105 Use `contextlib.suppress(Exception)` instead of `try`-`except`-`pass`
+   --> src/semantic_context_server/infrastructure/rag/vector_writer_service.py:104:13
+    |
+102 |           if self._worker_task and not self._worker_task.done():
+103 |               self._worker_task.cancel()
+104 | /             try:
+105 | |                 await self._worker_task
+106 | |             except Exception:
+107 | |                 pass
+    | |____________________^
+108 |
+109 |           await self._drain_queue()
+    |
+help: Replace `try`-`except`-`pass` with `with contextlib.suppress(Exception): ...`
+
+C901 `_worker_loop` is too complex (12 > 10)
+   --> src/semantic_context_server/infrastructure/rag/vector_writer_service.py:199:15
+    |
+197 |     # ==========================================================
+198 |
+199 |     async def _worker_loop(self):
+    |               ^^^^^^^^^^^^
+200 |         buffer = []
+201 |         last_flush = time.time()
+    |
+
+SIM105 Use `contextlib.suppress(Exception)` instead of `try`-`except`-`pass`
+   --> src/semantic_context_server/infrastructure/rag/vector_writer_service.py:260:13
+    |
+258 |               return True
+259 |           except asyncio.QueueFull:
+260 | /             try:
+261 | |                 self._queue.get_nowait()
+262 | |             except Exception:
+263 | |                 pass
+    | |____________________^
+264 |               try:
+265 |                   self._queue.put_nowait(item)
+    |
+help: Replace `try`-`except`-`pass` with `with contextlib.suppress(Exception): ...`
+
+SIM201 Use `self.base_dir.name != "campaigns"` instead of `not self.base_dir.name == "campaigns"`
+  --> src/semantic_context_server/infrastructure/storage/repositories/json_campaign_repository.py:17:12
+   |
+15 |         # Centralização do path conforme o padrão de storage
+16 |         self.base_dir = base_path
+17 |         if not self.base_dir.name == "campaigns":
+   |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+18 |             self.base_dir = base_path / "campaigns"
+   |
+help: Replace with `!=` operator
+
+SIM105 Use `contextlib.suppress(Exception)` instead of `try`-`except`-`pass`
+  --> src/semantic_context_server/infrastructure/storage/repositories/narrative_graph_repository.py:28:9
+   |
+27 |       async def save(self, campaign_id: str, graph: dict):
+28 | /         try:
+29 | |             await self.kv.set(self._key(campaign_id), graph)
+30 | |         except Exception:
+31 | |             pass
+   | |________________^
+   |
+help: Replace `try`-`except`-`pass` with `with contextlib.suppress(Exception): ...`
+
+SIM105 Use `contextlib.suppress(Exception)` instead of `try`-`except`-`pass`
+  --> src/semantic_context_server/infrastructure/storage/repositories/narrative_memory_repository.py:20:9
+   |
+19 |       async def save(self, campaign_id: str, memory: dict):
+20 | /         try:
+21 | |             await self.kv.set(self._key(campaign_id), memory)
+22 | |         except Exception:
+23 | |             pass
+   | |________________^
+   |
+help: Replace `try`-`except`-`pass` with `with contextlib.suppress(Exception): ...`
+
+B904 Within an `except` clause, raise exceptions with `raise ... from err` or `raise ... from None` to distinguish them from errors in exception handling
+  --> src/semantic_context_server/interfaces/api/routes/dice_controller.py:65:9
+   |
+64 |       except Exception:
+65 | /         raise HTTPException(
+66 | |             status_code=500,
+67 | |             detail={
+68 | |                 "text": "Erro ao rolar os dados.",
+69 | |                 "type": "error",
+70 | |                 "metadata": {"error": "internal_error"},
+71 | |             },
+72 | |         )
+   | |_________^
+   |
+
+F841 Local variable `dispatcher` is assigned to but never used
+   --> src/semantic_context_server/interfaces/discord/bot.py:171:5
+    |
+169 |     )
+170 |
+171 |     dispatcher = Dispatcher(
+    |     ^^^^^^^^^^
+172 |         deps,
+173 |         command_bus,
+    |
+help: Remove assignment to unused variable `dispatcher`
+
+B905 `zip()` without an explicit `strict=` parameter
+  --> src/semantic_context_server/vector_index/ann/ivf_index.py:73:28
+   |
+71 |         heap = []
+72 |
+73 |         for doc_id, vec in zip(candidates, vectors):
+   |                            ^^^^^^^^^^^^^^^^^^^^^^^^
+74 |             if not vec:
+75 |                 continue
+   |
+help: Add explicit value for parameter `strict=`
+
+B905 `zip()` without an explicit `strict=` parameter
+  --> src/semantic_context_server/vector_index/clustering/cluster_manager.py:29:47
+   |
+28 |         # Cria um mapeamento de ID -> Vetor para o processamento
+29 |         vector_data = {d_id: v for d_id, v in zip(doc_ids, results) if v is not None}
+   |                                               ^^^^^^^^^^^^^^^^^^^^^
+30 |
+31 |         if not vector_data:
+   |
+help: Add explicit value for parameter `strict=`
+
+C901 `run` is too complex (12 > 10)
+  --> src/semantic_context_server/vector_index/pipeline/stages/hybrid_fusion_stage.py:11:15
+   |
+ 9 |         self.ranker = ranker or HybridRanker()
+10 |
+11 |     async def run(self, ctx):
+   |               ^^^
+12 |         candidates = ctx.candidates
+   |
+
+SIM105 Use `contextlib.suppress(Exception)` instead of `try`-`except`-`pass`
+  --> src/semantic_context_server/vector_index/pipeline/stages/narrative_importance_stage.py:17:13
+   |
+15 |           # se tiver modelo de importância
+16 |           if self.importance:
+17 | /             try:
+18 | |                 ctx.results = self.importance.rank(ctx, ctx.candidates)
+19 | |             except Exception:
+20 | |                 pass
+   | |____________________^
+21 |
+22 |           return ctx
+   |
+help: Replace `try`-`except`-`pass` with `with contextlib.suppress(Exception): ...`
+
+B905 `zip()` without an explicit `strict=` parameter
+  --> src/semantic_context_server/vector_index/ranking/ranking_final.py:35:29
+   |
+33 |         tasks = [reader.get(doc_id) for doc_id in candidates] if reader else []
+34 |         vectors = await asyncio.gather(*tasks)
+35 |         base_vectors = dict(zip(candidates, vectors))
+   |                             ^^^^^^^^^^^^^^^^^^^^^^^^
+36 |
+37 |         query_tokens = set(getattr(ctx, "query_tokens", []) or [])
+   |
+help: Add explicit value for parameter `strict=`
+
+F841 Local variable `heap` is assigned to but never used
+  --> src/semantic_context_server/vector_index/ranking/stage2_ranker.py:27:9
+   |
+25 |         ann = getattr(ctx, "ann", None)
+26 |
+27 |         heap = []
+   |         ^^^^
+28 |
+29 |         # Se tivermos muitos candidatos, despachamos o loop para o Executor
+   |
+help: Remove assignment to unused variable `heap`
+
+SIM105 Use `contextlib.suppress(Exception)` instead of `try`-`except`-`pass`
+  --> src/semantic_context_server/vector_index/ranking/stage2_ranker.py:70:17
+   |
+68 |               # -----------------------------------------------------
+69 |               if ann and hasattr(ann, "cluster_similarity"):
+70 | /                 try:
+71 | |                     score += 0.3 * ann.cluster_similarity(ctx.q_vec, doc_id)
+72 | |                 except Exception:
+73 | |                     pass
+   | |________________________^
+74 |
+75 |               item = (score, doc_id)
+   |
+help: Replace `try`-`except`-`pass` with `with contextlib.suppress(Exception): ...`
+
+B007 Loop control variable `key` not used within loop body
+  --> src/semantic_context_server/vector_index/runtime/deduplicator.py:91:13
+   |
+90 |         logger.debug("Stopping InflightDeduplicator: cancelling %d tasks", len(self._inflight))
+91 |         for key, task in list(self._inflight.items()):
+   |             ^^^
+92 |             if not task.done():
+93 |                 task.cancel()
+   |
+help: Rename unused `key` to `_key`
+
+SIM105 Use `contextlib.suppress(asyncio.CancelledError)` instead of `try`-`except`-`pass`
+  --> src/semantic_context_server/vector_index/runtime/deduplicator.py:94:17
+   |
+92 |               if not task.done():
+93 |                   task.cancel()
+94 | /                 try:
+95 | |                     await task
+96 | |                 except asyncio.CancelledError:
+97 | |                     pass
+   | |________________________^
+98 |           self.clear()
+   |
+help: Replace `try`-`except`-`pass` with `with contextlib.suppress(asyncio.CancelledError): ...`
+
+SIM102 Use a single `if` statement instead of nested `if` statements
+  --> src/semantic_context_server/vector_index/vector_index_manager.py:73:13
+   |
+71 |               components = getattr(instance, "components", None)
+72 |
+73 | /             if components:
+74 | |                 if hasattr(components, "shutdown"):
+   | |___________________________________________________^
+75 |                       logger.debug("Shutting down components", extra={"campaign_id": campaign_id})
+76 |                       await components.shutdown()
+   |
+help: Combine `if` statements using `and`
+
+B904 Within an `except` clause, raise exceptions with `raise ... from err` or `raise ... from None` to distinguish them from errors in exception handling
+  --> tests/architecture/test_spec_compliance.py:29:13
+   |
+27 |             return path.read_text(encoding="utf-8")
+28 |         except Exception as e:
+29 |             raise RuntimeError(f"Failed to read {path}: {e}")
+   |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+30 |
+31 |     @classmethod
+   |
+
+E402 Module level import not at top of file
+   --> tests/architecture/test_spec_compliance.py:204:1
+    |
+202 | # Pytest fixtures
+203 |
+204 | import pytest
+    | ^^^^^^^^^^^^^
+    |
+
+B011 Do not `assert False` (`python -O` removes these calls), raise `AssertionError()`
+   --> tests/architecture/test_spec_compliance.py:256:16
+    |
+254 |                 for error in errors:
+255 |                     summary += f"  - {error}\n"
+256 |         assert False, summary
+    |                ^^^^^
+257 |     else:
+258 |         print("✅ All SPEC compliance rules passed!")
+    |
+help: Replace `assert False`
+
+C901 `search` is too complex (11 > 10)
+  --> tests/config/fakes/application/context/fake_context_service.py:23:15
+   |
+21 |     # ---------------------------------------------------------
+22 |
+23 |     async def search(
+   |               ^^^^^^
+24 |         self,
+25 |         query: str,
+   |
+
+C901 `_resolve_response` is too complex (12 > 10)
+   --> tests/config/fakes/infrastructure/llm/fake_llm_service.py:129:9
+    |
+127 |     # ==========================================================
+128 |
+129 |     def _resolve_response(self, action: str, memory: list[str]) -> str:
+    |         ^^^^^^^^^^^^^^^^^
+130 |         action = action.lower()
+    |
+
+E402 Module level import not at top of file
+  --> tests/conftest.py:18:1
+   |
+16 | load_settings.cache_clear()
+17 |
+18 | import asyncio
+   | ^^^^^^^^^^^^^^
+19 |
+20 | import pytest
+   |
+
+E402 Module level import not at top of file
+  --> tests/conftest.py:20:1
+   |
+18 | import asyncio
+19 |
+20 | import pytest
+   | ^^^^^^^^^^^^^
+21 | from fastapi.testclient import TestClient
+   |
+
+E402 Module level import not at top of file
+  --> tests/conftest.py:21:1
+   |
+20 | import pytest
+21 | from fastapi.testclient import TestClient
+   | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+22 |
+23 | from semantic_context_server.app import create_app
+   |
+
+E402 Module level import not at top of file
+  --> tests/conftest.py:23:1
+   |
+21 | from fastapi.testclient import TestClient
+22 |
+23 | from semantic_context_server.app import create_app
+   | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+24 | from semantic_context_server.application.ports.executor import ExecutorPort
+25 | from semantic_context_server.application.ports.storage_types import (
+   |
+
+E402 Module level import not at top of file
+  --> tests/conftest.py:24:1
+   |
+23 | from semantic_context_server.app import create_app
+24 | from semantic_context_server.application.ports.executor import ExecutorPort
+   | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+25 | from semantic_context_server.application.ports.storage_types import (
+26 |     StorageBackends,
+   |
+
+E402 Module level import not at top of file
+  --> tests/conftest.py:25:1
+   |
+23 |   from semantic_context_server.app import create_app
+24 |   from semantic_context_server.application.ports.executor import ExecutorPort
+25 | / from semantic_context_server.application.ports.storage_types import (
+26 | |     StorageBackends,
+27 | |     StorageKinds,
+28 | | )
+   | |_^
+29 |   from semantic_context_server.infrastructure.storage.providers.storage_backend_registry import (
+30 |       get_global_registry,
+   |
+
+E402 Module level import not at top of file
+  --> tests/conftest.py:29:1
+   |
+27 |       StorageKinds,
+28 |   )
+29 | / from semantic_context_server.infrastructure.storage.providers.storage_backend_registry import (
+30 | |     get_global_registry,
+31 | | )
+   | |_^
+32 |   from semantic_context_server.infrastructure.storage.providers.storage_backend_registry_setup import (
+33 |       create_storage_backend_registry,
+   |
+
+E402 Module level import not at top of file
+  --> tests/conftest.py:32:1
+   |
+30 |       get_global_registry,
+31 |   )
+32 | / from semantic_context_server.infrastructure.storage.providers.storage_backend_registry_setup import (
+33 | |     create_storage_backend_registry,
+34 | | )
+   | |_^
+35 |   from semantic_context_server.interfaces.api.dependencies import (
+36 |       get_command_bus,
+   |
+
+E402 Module level import not at top of file
+  --> tests/conftest.py:35:1
+   |
+33 |       create_storage_backend_registry,
+34 |   )
+35 | / from semantic_context_server.interfaces.api.dependencies import (
+36 | |     get_command_bus,
+37 | |     get_container,
+38 | | )
+   | |_^
+39 |   from tests.config.composition.test_container_builder import ContainerTestFactory
+40 |   from tests.config.fakes.infrastructure.storage.fake_storage_config import FakeStorageConfig
+   |
+
+E402 Module level import not at top of file
+  --> tests/conftest.py:39:1
+   |
+37 |     get_container,
+38 | )
+39 | from tests.config.composition.test_container_builder import ContainerTestFactory
+   | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+40 | from tests.config.fakes.infrastructure.storage.fake_storage_config import FakeStorageConfig
+   |
+
+E402 Module level import not at top of file
+  --> tests/conftest.py:40:1
+   |
+38 | )
+39 | from tests.config.composition.test_container_builder import ContainerTestFactory
+40 | from tests.config.fakes.infrastructure.storage.fake_storage_config import FakeStorageConfig
+   | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+41 |
+42 | # =========================================================
+   |
+
+C901 `test_container_shutdown_interrupts_mass_infinite_handlers` is too complex (11 > 10)
+  --> tests/integration/runtime/test_shutdown_stress.py:12:11
+   |
+11 | @pytest.mark.asyncio
+12 | async def test_container_shutdown_interrupts_mass_infinite_handlers(container):
+   |           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+13 |     """
+14 |     WORLD CLASS STRESS TEST:
+   |
+
+F841 Local variable `campaign1` is assigned to but never used
+   --> tests/runtime/test_lifecycle.py:173:5
+    |
+172 |     await c.start()
+173 |     campaign1 = await c.campaigns.get("c1")
+    |     ^^^^^^^^^
+174 |
+175 |     await c.shutdown()
+    |
+help: Remove assignment to unused variable `campaign1`
+
+F841 Local variable `domain_path` is assigned to but never used
+  --> tests/specs-ia-units/test_layer_isolation.py:60:9
+   |
+58 |         Rationale: Dependency inversion principle requires domain depends on abstractions.
+59 |         """
+60 |         domain_path = Path("src/semantic_context_server/domain")
+   |         ^^^^^^^^^^^
+61 |         ports_path = Path("src/semantic_context_server/domain/ports")
+   |
+help: Remove assignment to unused variable `domain_path`
+
+C901 `test_intent_dataset_with_expansion` is too complex (12 > 10)
+  --> tests/unit/application/services/intent/test_intent_dataset.py:64:11
+   |
+63 | @pytest.mark.asyncio
+64 | async def test_intent_dataset_with_expansion():
+   |           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+65 |     clf = IntentClassifier(SUPPORTED_LANGUAGES)
+66 |     expander = IntentDatasetExpander()
+   |

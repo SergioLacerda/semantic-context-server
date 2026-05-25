@@ -1,0 +1,10 @@
+Contexto narrativo:
+Eventos recentes:
+- open door
+Histórico:
+- open door
+Memória relevante:
+dark corridor
+Ação do jogador:
+enter room
+Continue a narrativa.

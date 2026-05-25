@@ -1,0 +1,31 @@
+#!/bin/bash
+# Post-merge Hook — refresh governance state after merge.
+
+set -euo pipefail
+
+PROJECT_ROOT="$(git rev-parse --show-toplevel)"
+cd "$PROJECT_ROOT" || exit 1
+
+YELLOW='\033[1;33m'
+GREEN='\033[0;32m'
+RED='\033[0;31m'
+NC='\033[0m'
+
+echo -e "${YELLOW}[POST-MERGE] Refreshing governance cache...${NC}"
+
+# ── Clear stale agent state cache ───────────────────────────────────────────
+CACHE_FILE="$PROJECT_ROOT/.sdd/agent_state.json"
+if [ -f "$CACHE_FILE" ]; then
+    rm -f "$CACHE_FILE" && echo -e "${GREEN}✓ Cache cleared${NC}" || {
+        echo -e "${RED}✗ Failed to clear cache: $CACHE_FILE${NC}"
+        exit 1
+    }
+fi
+
+if command -v uv >/dev/null 2>&1; then
+    echo -e "${YELLOW}→ Checking governance runtime status...${NC}"
+    uv run sdd runtime status >/dev/null || echo -e "${YELLOW}⚠ Could not read runtime status${NC}"
+fi
+
+echo -e "${GREEN}[POST-MERGE] Governance cache refresh complete.${NC}"
+exit 0
