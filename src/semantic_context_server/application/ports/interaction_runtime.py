@@ -1,0 +1,13 @@
+import asyncio
+from typing import Protocol, runtime_checkable
+
+
+@runtime_checkable
+class InteractionRuntimePort(Protocol):
+    def check_cooldown(self, user_id: str, seconds: int) -> bool: ...
+
+    def should_warn(self, channel_id: str, debounce: int) -> bool: ...
+
+    def get_lock(self, channel_id: str) -> asyncio.Lock: ...
+
+    def cleanup(self, max_age_seconds: int = 3600) -> None: ...

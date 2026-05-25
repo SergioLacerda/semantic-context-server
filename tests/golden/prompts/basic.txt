@@ -1,0 +1,10 @@
+Você é um mestre de RPG narrativo experiente.
+
+Contexto:
+Histórico:
+Você está em uma sala escura
+
+Ação do jogador:
+acender tocha
+
+Continue a narrativa de forma coerente e envolvente.

@@ -1,0 +1,253 @@
+[build-system]
+requires = ["setuptools>=72", "wheel"]
+build-backend = "setuptools.build_meta"
+
+# ---------------------------------------------------------
+# 📦 PROJECT
+# ---------------------------------------------------------
+[project]
+name = "semantic_context_server"
+version = "0.1.0"
+description = "Narrative engine for RPG storytelling (LLM + RAG)"
+requires-python = ">=3.11"
+readme = "README.md"
+authors = [{ name = "Sergio Lacerda Vieira" }]
+
+dependencies = [
+    "fastapi>=0.115,<1.0",
+    "uvicorn[standard]>=0.34,<1.0",
+    "blinker>=1.9,<2.0",
+    "discord.py>=2.4,<3.0",
+    "python-dotenv>=1.0,<2.0",
+    "openai>=1.51,<2.0",
+    "tenacity>=9.0,<10.0",
+    "pydantic>=2.0,<3.0",
+    "pydantic-settings>=2.0,<3.0",
+    "numpy>=1.26,<2.0",
+    "cachetools>=5.3,<6.0",
+]
+
+# ---------------------------------------------------------
+# 🧩 OPTIONAL DEPENDENCIES
+# ---------------------------------------------------------
+[project.optional-dependencies]
+
+vector-db = [
+    "chromadb>=0.4.24,<0.6",
+    "hnswlib>=0.8,<1.0",
+]
+
+local = [
+    "torch>=2.2,<3.0",
+    "sentence-transformers>=2.7,<3.0",
+]
+
+full = [
+    "chromadb>=0.4.24,<0.6",
+    "hnswlib>=0.8,<1.0",
+    "torch>=2.2,<3.0",
+    "sentence-transformers>=2.7,<3.0",
+]
+
+dev-cpu = [
+    "chromadb>=0.4.24,<0.6",
+    "hnswlib>=0.8,<1.0",
+    "sentence-transformers>=2.7,<3.0",
+]
+
+test = [
+    "pytest>=8.4,<9.0",
+    "pytest-xdist>=3.6,<4.0",
+    "pytest-asyncio>=0.24,<0.25",
+    "pytest-cov>=5.0,<6.0",
+    "pytest-mock>=3.14,<4.0",
+    "pytest-timeout>=2.4,<3.0",
+]
+
+dev = [
+    "semantic_context_server[test]",
+    "ruff>=0.6,<1.0",
+    "mypy>=1.10,<2.0",
+    "types-cachetools",
+    "import-linter>=2.0,<3.0",
+    "pre-commit>=3.8,<4.0"
+]
+
+ci = [
+    "semantic_context_server[test]",
+    "ruff>=0.6,<1.0",
+    "mypy>=1.10,<2.0",
+    "types-cachetools",
+    "import-linter>=2.0,<3.0",
+    "pip-audit>=2.7,<3.0",
+]
+
+# ---------------------------------------------------------
+# ⚙️ CLI
+# ---------------------------------------------------------
+[project.scripts]
+semantic_context_server = "semantic_context_server.app:run"
+server-benchmark = "semantic_context_server.interfaces.cli.benchmark_cli:cli"
+
+# ---------------------------------------------------------
+# 🧪 PYTEST
+# ---------------------------------------------------------
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"
+cache_dir = "build/.pytest_cache"
+
+norecursedirs = [
+    "*.egg",
+    ".*",
+    "build",
+    "dist",
+    "__pycache__",
+]
+
+# logs mais úteis no CI
+log_cli = true
+log_cli_level = "INFO"
+
+# fail rápido em erros críticos
+addopts = """
+--strict-markers
+--strict-config
+--tb=short
+--import-mode=importlib
+--timeout=30
+--timeout-method=thread
+"""
+
+filterwarnings = [
+    "ignore::DeprecationWarning:pkg_resources",
+    "ignore::pytest.PytestUnraisableExceptionWarning",
+]
+
+markers = [
+    "unit: testes unitários puros",
+    "integration: testes com container e dependências reais controladas",
+    "golden: validação de outputs esperados (snapshots/narrativa)",
+    "architecture: valida regras de arquitetura",
+    "slow: testes mais lentos (IO, async, integração)",
+    "contract: valida contratos entre implementações",
+    "scenario: fluxos completos de campanha",
+    "optional: testes que dependem de libs opcionais (ex: chromadb)"
+]
+
+# ---------------------------------------------------------
+# 📊 COVERAGE
+# ---------------------------------------------------------
+[tool.coverage.run]
+branch = true
+source = ["src/semantic_context_server"]
+data_file = "build/.coverage"
+omit = [
+    "*/tests/*",
+    "*/conftest.py",
+]
+
+[tool.coverage.report]
+precision = 2
+show_missing = true
+skip_empty = true
+skip_covered = true
+fail_under = 30
+
+exclude_lines = [
+    "pragma: no cover",
+    "if TYPE_CHECKING:",
+    "raise NotImplementedError",
+    "@(abc\\.)?abstractmethod",
+    "\\.\\.\\.",
+]
+
+[tool.coverage.html]
+directory = "build/coverage/html"
+
+[tool.coverage.xml]
+output = "build/coverage.xml"
+
+[tool.coverage.paths]
+source = [
+    "src/semantic_context_server",
+    # Linux CI runner
+    "*/semantic-context-server/src/semantic_context_server",
+    # Windows CI runner
+    "*\\semantic-context-server\\src\\semantic_context_server",
+]
+# ---------------------------------------------------------
+# 🧠 MYPY
+# ---------------------------------------------------------
+[tool.mypy]
+mypy_path = "src"
+python_version = "3.11"
+cache_dir = "build/.mypy_cache"
+
+explicit_package_bases = true
+ignore_missing_imports = true
+
+warn_unused_configs = true
+warn_unused_ignores = true
+warn_return_any = true
+warn_redundant_casts = true
+
+check_untyped_defs = true
+disallow_untyped_defs = true
+
+no_implicit_optional = true
+
+[[tool.mypy.overrides]]
+# Garantimos que a infraestrutura siga os tipos estritamente
+# para validar o Async Mandate (ia-rules.md)
+module = [
+    "semantic_context_server.infrastructure.*",
+    "semantic_context_server.vector_index.*",
+]
+# ---------------------------------------------------------
+# ⚡ RUFF
+# ---------------------------------------------------------
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+cache-dir = "build/.ruff_cache"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "W", "C90", "PT", "SIM"]
+ignore = [
+    "E501",   # line length enforced by ruff format
+    "B008",   # FastAPI Depends
+    "SIM108", # ternary vs if/else — team preference
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["PT", "SIM"]
+"**/test_*.py" = ["PT", "SIM"]
+
+[tool.ruff.lint.mccabe]
+max-complexity = 10
+
+[tool.ruff.lint.isort]
+known-first-party = ["semantic_context_server"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+line-ending = "auto"
+
+# ---------------------------------------------------------
+# 🏛️ IMPORT-LINTER
+# ---------------------------------------------------------
+[tool.importlinter]
+root_package = "semantic_context_server"
+
+[[tool.importlinter.contracts]]
+name = "Clean Architecture"
+type = "layers"
+layers = [
+    "interfaces",
+    "frameworks",
+    "infrastructure",
+    "application",
+    "domain",
+]

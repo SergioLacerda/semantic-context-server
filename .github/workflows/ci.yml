@@ -1,0 +1,164 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  PYTHON_VERSION: "3.11"
+  UV_CACHE_DIR: ~/.cache/uv
+
+jobs:
+  # ─── Stage 1: Preflight ───────────────────────────────────────────────────
+  preflight:
+    name: Preflight (lock + sync)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          version: "latest"
+
+      - name: Cache uv
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.UV_CACHE_DIR }}
+          key: uv-${{ runner.os }}-${{ hashFiles('uv.lock') }}
+          restore-keys: uv-${{ runner.os }}-
+
+      - name: Assert lock is consistent
+        run: make lock-check
+
+      - name: Install CI dependencies (frozen)
+        run: make sync-ci
+
+  # ─── Stage 2: Quality ─────────────────────────────────────────────────────
+  quality:
+    name: Quality (lint + type)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    needs: preflight
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          version: "latest"
+
+      - name: Cache uv
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.UV_CACHE_DIR }}
+          key: uv-${{ runner.os }}-${{ hashFiles('uv.lock') }}
+          restore-keys: uv-${{ runner.os }}-
+
+      - name: Install CI dependencies (frozen)
+        run: make sync-ci
+
+      - name: Lint
+        run: make lint
+
+      - name: Type check
+        run: make type
+
+  # ─── Stage 3: Architecture & Contracts ───────────────────────────────────
+  architecture:
+    name: Architecture & Contracts
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    needs: quality
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          version: "latest"
+
+      - name: Cache uv
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.UV_CACHE_DIR }}
+          key: uv-${{ runner.os }}-${{ hashFiles('uv.lock') }}
+          restore-keys: uv-${{ runner.os }}-
+
+      - name: Install CI dependencies (frozen)
+        run: make sync-ci
+
+      - name: Architecture tests
+        run: make arch
+
+      - name: Contract tests
+        run: make contract
+
+  # ─── Stage 4: Tests ───────────────────────────────────────────────────────
+  tests:
+    name: Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    needs: architecture
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          version: "latest"
+
+      - name: Cache uv
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.UV_CACHE_DIR }}
+          key: uv-${{ runner.os }}-${{ hashFiles('uv.lock') }}
+          restore-keys: uv-${{ runner.os }}-
+
+      - name: Install CI dependencies (frozen)
+        run: make sync-ci
+
+      - name: Run tests
+        run: make test
+
+      - name: Upload coverage
+        uses: codecov/codecov-action@v4
+        if: always()
+        with:
+          files: build/coverage.xml
+          fail_ci_if_error: false
+
+  # ─── Stage 5: Security ────────────────────────────────────────────────────
+  security:
+    name: Security (pip-audit)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    needs: preflight
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          version: "latest"
+
+      - name: Cache uv
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.UV_CACHE_DIR }}
+          key: uv-${{ runner.os }}-${{ hashFiles('uv.lock') }}
+          restore-keys: uv-${{ runner.os }}-
+
+      - name: Install CI dependencies (frozen)
+        run: make sync-ci
+
+      - name: Audit dependencies
+        run: uv run pip-audit --strict
+        continue-on-error: true

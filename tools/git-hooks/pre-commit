@@ -1,0 +1,38 @@
+#!/bin/bash
+# Pre-commit Hook — current project guardrails.
+
+set -euo pipefail
+
+REPO_ROOT="$(git rev-parse --show-toplevel)"
+CURRENT_BRANCH="$(git rev-parse --abbrev-ref HEAD)"
+
+echo "SDD Guardrail: Pre-commit Validation"
+echo "Branch: $CURRENT_BRANCH"
+
+# ── 1. Block direct commits to main ─────────────────────────────────────────
+if [ "$CURRENT_BRANCH" = "main" ]; then
+    echo "BLOCKED: Direct commits to main are not allowed."
+    echo "FIX: Use a feature/wip branch and open a PR."
+    exit 1
+fi
+
+# ── 2. P003: Block agent-initiated commits ───────────────────────────────────
+# SDD_AGENT_MODE must be explicitly "true" (exact string, case-sensitive).
+if [ "${SDD_AGENT_MODE:-}" = "true" ]; then
+    echo "BLOCKED (P003): Agents must not commit autonomously."
+    echo "FIX: Stage the changes and ask the user to run git commit."
+    exit 1
+fi
+
+# ── 3. Optional governance runtime status ───────────────────────────────────
+if command -v uv >/dev/null 2>&1; then
+    echo "Checking governance runtime status..."
+    uv run sdd runtime status >/dev/null || echo "WARNING: sdd runtime status failed (non-blocking)."
+fi
+
+# ── 4. Unified quality gate ─────────────────────────────────────────────────
+echo "Running make lint..."
+cd "$REPO_ROOT"
+make lint
+
+exit 0
