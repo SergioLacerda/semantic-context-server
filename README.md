@@ -4,7 +4,7 @@
 ![License](https://img.shields.io/badge/license-MIT-green)
 ![Architecture](https://img.shields.io/badge/architecture-clean--hexagonal-orange)
 ![RAG](https://img.shields.io/badge/RAG-multi--stage-purple)
-![Status](https://img.shields.io/badge/status-active-success)
+![Status](https://img.shields.io/badge/status-active--refactoring-success)
 ![FastAPI](https://img.shields.io/badge/FastAPI-0.115+-teal)
 ![Discord](https://img.shields.io/badge/Discord-Interactions-blue)
 ![Tests](https://img.shields.io/badge/tests-pytest-informational)
@@ -22,6 +22,18 @@ RPG Narrative Server is a **modular narrative engine** powered by:
 - 🔌 Multiple interfaces (Discord, API, CLI)
 
 > This is **not a bot** — it is a **narrative server platform**.
+
+---
+
+## ⚠️ Project Status
+
+This repository is currently under active refactoring.
+
+- Core architecture boundaries are being tightened.
+- Internal modules and extension points may change until stabilization.
+- CI, tests, and coverage remain the primary safety gates during this phase.
+
+For production usage, prefer pinned commits/tags instead of tracking `main` directly.
 
 ---
 
@@ -103,7 +115,9 @@ All commands run through `make` — no direct `pytest`, `ruff`, or `mypy` calls 
 | `make type` | Run mypy |
 | `make arch` | Run architecture validation tests |
 | `make contract` | Run contract tests |
+| `make ci-fast` | Fast local CI checks (lock → lint → type → fast tests) |
 | `make ci` | Full local CI pipeline (lint → type → arch → contract → test) |
+| `make validate` | Fast pre-push gate (lock → lint → type) |
 | `make lock` | Regenerate `uv.lock` |
 | `make lock-check` | Assert lock is consistent |
 | `make clean` | Remove caches |

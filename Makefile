@@ -3,7 +3,7 @@
 .PHONY: help install sync sync-ci sync-full run \
         lint lint-fix fmt type \
         test test-fast arch contract \
-        ci ci-local validate \
+        ci ci-local ci-fast validate \
         lock lock-check clean hooks hooks-install
 
 help:
@@ -33,6 +33,7 @@ help:
 	@echo "CI/CD"
 	@echo "  ci          Run full local CI pipeline (same as ci-local)"
 	@echo "  ci-local    Run full local CI pipeline"
+	@echo "  ci-fast     Run fast local CI checks (lock + lint + type + fast tests)"
 	@echo "  validate    Run lock-check + lint + type (fast pre-push check)"
 	@echo ""
 	@echo "Lock"
@@ -96,6 +97,8 @@ contract:
 ci-local: lock-check lint type arch contract test
 
 ci: ci-local
+
+ci-fast: lock-check lint type test-fast
 
 # Fast pre-push gate (no tests): lock + lint + types
 validate: lock-check lint type
