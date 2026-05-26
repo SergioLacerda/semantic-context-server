@@ -72,6 +72,10 @@ def run_lint_check() -> None:
     # Ruff F401/F841 break on unused imports/locals; lint-fix applies auto-fix when possible.
     run_step("ruff check", ["uv", "run", "ruff", "check", "src", "tests"])
     run_step("ruff format --check", ["uv", "run", "ruff", "format", "--check", "src", "tests"])
+    run_step(
+        "bandit security scan",
+        ["uv", "run", "bandit", "-q", "-r", "src", "packages", "apps", "-x", "tests", "-ll", "-ii"],
+    )
     run_step("mypy", ["uv", "run", "mypy", "src"])
     run_step("architecture tests", ["uv", "run", "pytest", "-m", "architecture"])
     run_step("contract tests", ["uv", "run", "pytest", "-m", "contract"])

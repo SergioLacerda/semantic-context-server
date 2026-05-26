@@ -31,7 +31,7 @@ if command -v uv >/dev/null 2>&1; then
 fi
 
 # ── 4. Unified quality gate ─────────────────────────────────────────────────
-echo "Running make lint..."
+echo "Running lint gate (make lint)..."
 cd "$REPO_ROOT"
 make lint
 
