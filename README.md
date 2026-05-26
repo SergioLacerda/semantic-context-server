@@ -1,9 +1,10 @@
-# 🧠 RPG Narrative Server
+# 🧠 Semantic Context Server
 
 ![Python](https://img.shields.io/badge/python-3.12-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
 ![Architecture](https://img.shields.io/badge/architecture-clean--hexagonal-orange)
-![RAG](https://img.shields.io/badge/RAG-multi--stage-purple)
+![Core](https://img.shields.io/badge/core-semantic--compression-blueviolet)
+![RAG](https://img.shields.io/badge/RAG-optional--enrichment-6f42c1)
 ![Status](https://img.shields.io/badge/status-active--refactoring-success)
 ![FastAPI](https://img.shields.io/badge/FastAPI-0.115+-teal)
 ![Discord](https://img.shields.io/badge/Discord-Interactions-blue)
@@ -12,16 +13,16 @@
 [![Codecov](https://codecov.io/gh/SergioLacerda/semantic-context-server/graph/badge.svg)](https://codecov.io/gh/SergioLacerda/semantic-context-server)
 ---
 
-## 🚀 Narrative Engine for RPG Storytelling
+## 🚀 Semantic Compression Server for LLM Agents
 
-RPG Narrative Server is a **modular narrative engine** powered by:
+Semantic Context Server is a **modular semantic compression server** focused on:
 
-- 🧠 LLM (OpenAI or local)
-- 🔎 Advanced RAG pipeline
-- 💾 Persistent campaign memory
-- 🔌 Multiple interfaces (Discord, API, CLI)
+- 🗜️ Compressing context and prompts without losing intent
+- ✨ Improving prompt quality for better model responses
+- 🤖 Integrating with LLM agents through reusable interfaces
+- 🧩 Supporting agent workflows for developers and RPG players
 
-> This is **not a bot** — it is a **narrative server platform**.
+> This is **not a chatbot** — it is a **context optimization platform**.
 
 ---
 
@@ -85,17 +86,23 @@ No manual virtualenv activation needed — `uv` manages the environment.
 - UseCases define behavior
 - Infrastructure is replaceable
 
-### 🔹 RAG Pipeline
+### 🔹 Semantic Compression Pipeline
 
-- Hybrid retrieval (vector + keyword + graph + timeline)
-- Multi-stage ranking
-- Context-aware generation
+- Intent-preserving prompt/context compression
+- Configurable transformation stages
+- Quality-oriented optimization passes
 
-### 🔹 Narrative Engine
+### 🔹 RAG Enrichment Pipeline
 
-- Persistent memory
-- Event-driven updates
-- Multi-session campaigns
+- Optional retrieval augmentation for context quality
+- Hybrid retrieval strategies when external knowledge is needed
+- Works before/after compression depending on workflow needs
+
+### 🔹 Agent Integration
+
+- Interfaces for API, CLI, and external orchestrators
+- Reusable prompt optimization flows
+- Domain-ready usage for coding and RPG assistants
 
 ---
 
@@ -166,7 +173,7 @@ Before contributing, read the architecture governance:
 
 - 🚧 Active development
 - 🔧 Stabilization phase
-- 🧠 RAG evolving
+- 🧠 Compression strategies evolving
 
 ---
 
@@ -174,6 +181,6 @@ Before contributing, read the architecture governance:
 
 A platform for:
 
-- dynamic storytelling
-- AI-driven RPG campaigns
-- extensible narrative systems
+- semantic compression and prompt optimization
+- LLM agent integration and orchestration
+- domain-focused assistants (developer and RPG workflows)
