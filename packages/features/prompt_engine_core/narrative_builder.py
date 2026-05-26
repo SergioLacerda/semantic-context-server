@@ -53,6 +53,11 @@ class NarrativeBuilder:
             parts.append("\n[Elementos conectados]")
             parts.append(", ".join(graph[:5]))
 
+        retrieved = ctx.get("retrieved")
+        if retrieved and str(retrieved).strip():
+            parts.append("\n[Contexto recuperado]")
+            parts.append(str(retrieved).strip())
+
         semantic = ctx.get("semantic")
         if semantic and semantic.strip():
             parts.append("\n[Contexto adicional]")

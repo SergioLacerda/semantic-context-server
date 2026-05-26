@@ -3,10 +3,13 @@
 [Eventos recentes]
 • open door
 
-[Memória relevante]
-• dark corridor
+[Contexto recuperado]
+dark corridor
 
 [Ação do jogador]
 enter room
 
 Descreva o que acontece a seguir.
+
+[Diretriz RPG]
+Considere rolagens, risco e estado da campanha.

@@ -132,6 +132,7 @@ jobs:
         uses: codecov/codecov-action@v4
         if: always()
         with:
+          token: ${{ secrets.CODECOV_TOKEN }}
           files: build/coverage.xml
           fail_ci_if_error: false
 

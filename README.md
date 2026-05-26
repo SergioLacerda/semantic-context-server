@@ -8,9 +8,8 @@
 ![FastAPI](https://img.shields.io/badge/FastAPI-0.115+-teal)
 ![Discord](https://img.shields.io/badge/Discord-Interactions-blue)
 ![Tests](https://img.shields.io/badge/tests-pytest-informational)
-![Build](https://github.com/SergioLacerda/semantic-context-server/actions/workflows/ci.yml/badge.svg)
-![Coverage](https://codecov.io/gh/SergioLacerda/semantic-context-server/branch/main/graph/badge.svg)
-![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)
+[![CI](https://github.com/SergioLacerda/semantic-context-server/actions/workflows/ci.yml/badge.svg)](https://github.com/SergioLacerda/semantic-context-server/actions/workflows/ci.yml)
+[![Codecov](https://codecov.io/gh/SergioLacerda/semantic-context-server/graph/badge.svg)](https://codecov.io/gh/SergioLacerda/semantic-context-server)
 ---
 
 ## 🚀 Narrative Engine for RPG Storytelling
