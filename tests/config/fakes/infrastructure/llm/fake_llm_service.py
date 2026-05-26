@@ -1,11 +1,11 @@
 import re
 
+from packages.features.llm_gateway.contracts import LLMGatewayContract
 from semantic_context_server.application.dto.llm_request import LLMRequest
 from semantic_context_server.application.dto.llm_response import LLMResponse
-from semantic_context_server.application.ports.llm import LLMServicePort
 
 
-class FakeLLMService(LLMServicePort):
+class FakeLLMService(LLMGatewayContract):
     def __init__(
         self,
         result: str | None = None,
@@ -142,7 +142,10 @@ class FakeLLMService(LLMServicePort):
     def _resolve_attack(self, action: str, has_sword: bool) -> str:
         if "attack" not in action:
             return ""
-        return "you attack with your sword" if has_sword else "you attack"
+        match = re.search(r"attack\s+(?:the\s+)?(\w+)", action)
+        target = f" the {match.group(1)}" if match else ""
+        weapon = " with your sword" if has_sword else ""
+        return f"you attack{target}{weapon}"
 
     def _resolve_pick(self, action: str) -> str:
         if not any(k in action for k in ["pick", "grab", "take"]):
@@ -172,6 +175,11 @@ class FakeLLMService(LLMServicePort):
     # ==========================================================
 
     def _extract_action(self, prompt: str) -> str:
+        # current format: [Ação do jogador]\n<action>
+        match = re.search(r"ação do jogador[:\]]\s*[\n\r]+([^\n\r]+)", prompt)
+        if match:
+            return match.group(1).strip()
+        # legacy format: Ação do jogador: <action> (same line)
         match = re.search(r"ação do jogador:\s*(.+)", prompt)
         if match:
             return match.group(1).strip()

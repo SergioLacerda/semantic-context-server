@@ -1,9 +1,9 @@
 import pytest
 
-from semantic_context_server.infrastructure.cache.base.async_kv_adapter import (
+from packages.features.semantic_cache.base_cache import (
     AsyncKVAdapter,
+    BaseCache,
 )
-from semantic_context_server.infrastructure.cache.base.base_cache import BaseCache
 from tests.config.fakes.infrastructure.storage.fake_kv_store import FakeKVStore
 
 

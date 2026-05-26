@@ -1,6 +1,8 @@
 import hashlib
 
-from semantic_context_server.application.ports.embedding_gateway import EmbeddingGateway
+from packages.features.embedding_gateway.contracts import (
+    EmbeddingGatewayContract as EmbeddingGateway,
+)
 from tests.utils.spy import spy_on
 
 

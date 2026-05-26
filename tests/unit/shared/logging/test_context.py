@@ -2,7 +2,7 @@ import asyncio
 
 import pytest
 
-from semantic_context_server.shared.logging.context import (
+from packages.core.shared_kernel.logging_context import (
     get_request_id,
     set_request_id,
 )

@@ -13,6 +13,10 @@ def _is_compatible_type(port_t, impl_t):
     if port_t == impl_t:
         return True
 
+    # Port declaring Any means "any concrete impl return type is acceptable"
+    if port_t is Any:
+        return True
+
     # dict vs dict[str, Any]
     if _is_dict_like(port_t) and _is_dict_like(impl_t):
         return True

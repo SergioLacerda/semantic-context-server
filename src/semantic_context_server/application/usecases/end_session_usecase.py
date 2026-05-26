@@ -1,8 +1,8 @@
 import logging
 from typing import Any
 
+from packages.features.prompt_engine_core.session_summarizer import SessionSummarizer
 from semantic_context_server.application.dto.llm_request import LLMRequest
-from semantic_context_server.domain.narrative.session_summarizer import SessionSummarizer
 
 logger = logging.getLogger(__name__)
 

@@ -2,7 +2,7 @@ import asyncio
 
 import pytest
 
-from semantic_context_server.shared.resilience import resilient_call
+from packages.core.shared_kernel.resilience import resilient_call
 
 
 @pytest.mark.slow

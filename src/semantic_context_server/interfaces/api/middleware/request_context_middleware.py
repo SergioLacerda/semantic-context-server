@@ -5,7 +5,7 @@ from typing import Any
 
 from fastapi import Request
 
-from semantic_context_server.shared.logging.context import set_request_id
+from packages.core.shared_kernel.logging_context import set_request_id
 
 logger = logging.getLogger("semantic_context_server.api")
 

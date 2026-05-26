@@ -1,4 +1,4 @@
-from semantic_context_server.shared.json_utils import load_json, save_json
+from packages.core.shared_kernel.json_utils import load_json, save_json
 from tests.config.helpers.io import read_text_utf8, write_text_utf8
 
 

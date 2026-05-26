@@ -1,5 +1,5 @@
-from semantic_context_server.infrastructure.cache.base.base_cache import BaseCache
-from semantic_context_server.infrastructure.cache.base.base_cache_manager import (
+from packages.features.semantic_cache.base_cache import BaseCache
+from packages.features.semantic_cache.cache_manager import (
     BaseCacheManager,
 )
 from tests.config.fakes.infrastructure.storage.fake_kv_store import FakeKVStore

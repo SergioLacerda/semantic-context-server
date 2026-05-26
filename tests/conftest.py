@@ -20,7 +20,7 @@ import asyncio  # noqa: E402, I001
 import pytest  # noqa: E402
 from fastapi.testclient import TestClient  # noqa: E402
 
-from semantic_context_server.app import create_app  # noqa: E402
+from packages.interfaces.http_api import create_app  # noqa: E402
 from semantic_context_server.application.ports.executor import ExecutorPort  # noqa: E402
 from semantic_context_server.application.ports.storage_types import (  # noqa: E402
     StorageBackends,
@@ -60,7 +60,7 @@ def forbid_real_llm(monkeypatch):
         raise RuntimeError("🚨 LLM real proibido em testes")
 
     monkeypatch.setattr(
-        "semantic_context_server.infrastructure.adapters.llm.factory.create_llm_provider",
+        "packages.features.llm_gateway.infrastructure.provider_factory.create_llm_provider",
         _fail,
     )
 

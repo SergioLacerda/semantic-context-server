@@ -1,7 +1,7 @@
 import json
 from pathlib import Path
 
-from semantic_context_server.shared.json_utils import (
+from packages.core.shared_kernel.json_utils import (
     load_json,
     save_json,
     update_json,

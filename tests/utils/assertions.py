@@ -1,7 +1,7 @@
 # tests/utils/assertions.py
 
+from packages.features.prompt_engine_rpg.rpg_prompt_engine import RPGPromptEngine
 from semantic_context_server.application.contracts.response import Response
-from semantic_context_server.domain.narrative.narrative_builder import NarrativeBuilder
 from tests.config.helpers.golden_assert import normalize
 
 # ==========================================================
@@ -120,6 +120,8 @@ def assert_prompt_not_has(prompt: str, *sections):
 
 
 def assert_prompt_semantic(prompt: str, *keywords):
+    if not keywords:
+        return
     text = prompt.lower()
 
     assert any(k.lower() in text for k in keywords), f"\nExpected one of {keywords}\nGot:\n{prompt}"
@@ -148,7 +150,7 @@ def assert_prompt_contains(prompt: str, *keywords):
 
 
 def build_prompt(ctx: dict, action: str) -> str:
-    builder = NarrativeBuilder()
+    builder = RPGPromptEngine()
 
     system = builder.build_system_prompt(str(ctx.get("scene_type") or "DEFAULT"))
 

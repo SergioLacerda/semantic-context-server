@@ -3,7 +3,9 @@
 import logging
 from collections.abc import Iterable, Sequence
 
-from semantic_context_server.application.ports.embedding_gateway import EmbeddingGateway
+from packages.features.embedding_gateway.contracts import (
+    EmbeddingGatewayContract as EmbeddingGateway,
+)
 
 logger = logging.getLogger("semantic_context_server.embedding.strategy")
 

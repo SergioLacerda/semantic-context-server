@@ -3,7 +3,7 @@ from typing import Any, cast
 
 import pytest
 
-from semantic_context_server.shared.hash_utils import sha256_hash
+from packages.core.shared_kernel.hash_utils import sha256_hash
 
 
 def test_sha256_hash_with_string():

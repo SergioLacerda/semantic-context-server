@@ -2,9 +2,9 @@ from typing import Any
 
 from fastapi import Depends, Request
 
+from packages.features.llm_gateway.contracts import LLMGatewayContract
 from semantic_context_server.application.ports.event_bus import EventBus
 from semantic_context_server.application.ports.executor import ExecutorPort
-from semantic_context_server.application.ports.llm import LLMServicePort
 from semantic_context_server.application.runtime.app_runtime import AppRuntime
 from semantic_context_server.application.runtime.campaign_runtime import CampaignRuntime
 
@@ -71,7 +71,7 @@ async def get_llm(request: Request) -> Any:
     if container is None:
         return None
     try:
-        return container.resolve(LLMServicePort)
+        return container.resolve(LLMGatewayContract)
     except Exception:
         return None
 

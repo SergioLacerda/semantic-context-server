@@ -2,7 +2,9 @@ from collections.abc import Iterable
 
 import pytest
 
-from semantic_context_server.application.ports.embedding_gateway import EmbeddingGateway
+from packages.features.embedding_gateway.contracts import (
+    EmbeddingGatewayContract as EmbeddingGateway,
+)
 
 # =========================================================
 # FAKES

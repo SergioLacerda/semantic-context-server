@@ -1,6 +1,6 @@
 import pytest
 
-from semantic_context_server.frameworks.discord.responder import DiscordResponder
+from semantic_context_server.interfaces.discord.responder import DiscordResponder
 from tests.config.factories.framework.context import make_context
 
 

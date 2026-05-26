@@ -1,4 +1,4 @@
-from semantic_context_server.application.services.benchmark_formatter import (
+from packages.features.benchmark_engine.application.benchmark_formatter import (
     BenchmarkFormatter,
 )
 

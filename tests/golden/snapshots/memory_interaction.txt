@@ -1,0 +1,1 @@
+Response(text='you open the chest with the key', type='narrative', metadata={'intent': 'DEFAULT', 'scene_type': 'DEFAULT'})

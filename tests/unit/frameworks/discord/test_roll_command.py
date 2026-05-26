@@ -1,6 +1,6 @@
 import pytest
 
-from semantic_context_server.frameworks.discord.adapters.roll_commands import (
+from semantic_context_server.interfaces.discord.adapters.roll_commands import (
     register_roll_command,
 )
 from tests.config.factories.framework.bot import make_bot

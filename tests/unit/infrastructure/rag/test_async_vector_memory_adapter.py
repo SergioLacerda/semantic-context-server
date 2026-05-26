@@ -3,7 +3,7 @@ from types import SimpleNamespace
 
 import pytest
 
-from semantic_context_server.infrastructure.rag.vector_writer_service import (
+from packages.features.vector_index.writer import (
     VectorWriterService,
 )
 from tests.config.fakes.infrastructure.storage.fake_kv_store import FakeKVStore
