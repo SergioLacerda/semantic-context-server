@@ -1,7 +1,7 @@
 # 🧠 Semantic Context Server
 
 ![Python](https://img.shields.io/badge/python-3.12-blue)
-![License](https://img.shields.io/badge/license-MIT-green)
+![License](https://img.shields.io/badge/license-Non--Commercial-red)
 ![Architecture](https://img.shields.io/badge/architecture-clean--hexagonal-orange)
 ![Core](https://img.shields.io/badge/core-semantic--compression-blueviolet)
 ![RAG](https://img.shields.io/badge/RAG-optional--enrichment-6f42c1)
