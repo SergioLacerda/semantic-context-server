@@ -110,8 +110,8 @@ All commands run through `make` — no direct `pytest`, `ruff`, or `mypy` calls 
 | `make run` | Start uvicorn server |
 | `make test` | Run all tests |
 | `make test-fast` | Run fast tests only (skip slow + integration) |
-| `make lint` | Unified quality gate (ruff + mypy + architecture + contract) |
-| `make fmt` | Auto-fix available lint issues and re-run lint gate |
+| `make lint` | Unified quality gate (ruff + bandit + mypy + architecture + contract) |
+| `make fmt` | Auto-fix available lint issues and re-run lint gate (incl. bandit check) |
 | `make type` | Run mypy |
 | `make arch` | Run architecture validation tests |
 | `make contract` | Run contract tests |

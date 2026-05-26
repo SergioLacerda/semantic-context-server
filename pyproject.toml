@@ -67,6 +67,7 @@ test = [
 dev = [
     "semantic_context_server[test]",
     "ruff>=0.6,<1.0",
+    "bandit>=1.7,<2.0",
     "mypy>=1.10,<2.0",
     "types-cachetools",
     "import-linter>=2.0,<3.0",
@@ -76,6 +77,7 @@ dev = [
 ci = [
     "semantic_context_server[test]",
     "ruff>=0.6,<1.0",
+    "bandit>=1.7,<2.0",
     "mypy>=1.10,<2.0",
     "types-cachetools",
     "import-linter>=2.0,<3.0",
