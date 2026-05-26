@@ -1,10 +1,12 @@
-Contexto narrativo:
-Eventos recentes:
-- open door
-Histórico:
-- open door
-Memória relevante:
-dark corridor
-Ação do jogador:
+[Contexto narrativo]
+
+[Eventos recentes]
+• open door
+
+[Memória relevante]
+• dark corridor
+
+[Ação do jogador]
 enter room
-Continue a narrativa.
+
+Descreva o que acontece a seguir.

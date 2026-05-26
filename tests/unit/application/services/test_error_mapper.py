@@ -1,7 +1,7 @@
 import pytest
 
-from semantic_context_server.application.services.llm.error_mapper import map_http_error
-from semantic_context_server.application.services.llm.llm_errors import (
+from packages.features.llm_gateway.application.error_mapper import map_http_error
+from packages.features.llm_gateway.application.llm_errors import (
     LLMClientError,
     LLMRateLimitError,
     LLMRetryableError,

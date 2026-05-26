@@ -1,8 +1,12 @@
-from semantic_context_server.application.ports.embedding_gateway import EmbeddingGateway
-from semantic_context_server.application.ports.llm import LLMServicePort
-from semantic_context_server.application.ports.vector_index_gateway import VectorIndexGateway
-from semantic_context_server.application.ports.vector_reader_port import VectorReaderPort
-from semantic_context_server.application.ports.vector_writer_port import VectorWriterPort
+from packages.features.embedding_gateway.contracts import (
+    EmbeddingGatewayContract as EmbeddingGateway,
+)
+from packages.features.llm_gateway.contracts import LLMGatewayContract
+from packages.features.vector_index.contracts import (
+    VectorIndexGateway,
+    VectorReaderPort,
+    VectorWriterPort,
+)
 from tests.contracts.framework.rules.base_rule import BaseRule
 from tests.contracts.framework.rules.port_compliance_rule import ensure_port_compliance
 
@@ -14,7 +18,7 @@ class ExplicitPortsRule(BaseRule):
         # --------------------------------------------------
         # CORE PORTS
         # --------------------------------------------------
-        ensure_port_compliance(container.llm, LLMServicePort, "llm")
+        ensure_port_compliance(container.llm, LLMGatewayContract, "llm")
         ensure_port_compliance(container.embedding, EmbeddingGateway, "embedding")
 
         # --------------------------------------------------

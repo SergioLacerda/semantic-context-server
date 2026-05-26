@@ -2,12 +2,12 @@ import shutil
 from pathlib import Path
 from typing import Any
 
+from packages.core.shared_kernel.json_utils import load_json, save_json
 from semantic_context_server.application.ports.campaign_repository import (
     CampaignRepositoryPort,
 )
 from semantic_context_server.application.ports.executor import ExecutorPort
 from semantic_context_server.infrastructure.serialization.json_serializer import JSONSerializer
-from semantic_context_server.shared.json_utils import load_json, save_json
 
 
 class JSONCampaignRepository(CampaignRepositoryPort):

@@ -2,6 +2,8 @@ from dataclasses import dataclass, field
 from typing import Any
 from unittest.mock import AsyncMock, MagicMock
 
+from packages.features.semantic_cache.base_cache import BaseCache
+from packages.interfaces.discord_bot import create_bot
 from semantic_context_server.application.commands.campaign.command import CampaignCommand
 from semantic_context_server.application.commands.campaign.handler import CampaignCommandHandler
 from semantic_context_server.application.commands.command_bus import CommandBus
@@ -12,8 +14,6 @@ from semantic_context_server.application.commands.roll.command import RollComman
 from semantic_context_server.application.commands.roll.handler import RollCommandHandler
 from semantic_context_server.application.commands.session.command import SessionCommand
 from semantic_context_server.application.commands.session.handler import SessionCommandHandler
-from semantic_context_server.frameworks.discord.bot import create_bot
-from semantic_context_server.infrastructure.cache.base.base_cache import BaseCache
 from tests.config.factories.framework.deps import make_deps
 from tests.config.helpers.discord_factory import DummyExecutor, DummySettings
 

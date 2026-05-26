@@ -5,10 +5,10 @@ from typing import Any
 
 import numpy as np
 
+from packages.core.shared_kernel.json_utils import load_json, save_json
 from semantic_context_server.infrastructure.storage.vector_store_config import (
     VectorStoreConfig,
 )
-from semantic_context_server.shared.json_utils import load_json, save_json
 
 # ---------------------------------------------------------
 # STORE

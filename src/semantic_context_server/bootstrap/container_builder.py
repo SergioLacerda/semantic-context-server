@@ -1,35 +1,40 @@
 from types import SimpleNamespace
 from typing import Any, cast
 
+from packages.features.embedding_gateway.contracts import (
+    EmbeddingGatewayContract as EmbeddingGateway,
+)
+from packages.features.llm_gateway.application.llm_service import LLMService
+from packages.features.llm_gateway.contracts import LLMGatewayContract
+from packages.features.llm_gateway.infrastructure.provider_factory import create_llm_provider
+from packages.features.rpg_engine import (
+    DiceUseCase,
+    DomainDiceDistributionAnalyzerAdapter,
+    DomainDiceParserAdapter,
+    DomainDiceRollerAdapter,
+)
+from packages.features.semantic_cache.implementations import EmbeddingCache, SemanticCache
+from packages.features.storage import (
+    CampaignStorageProviderContract,
+    CampaignStorageService,
+    LegacyCampaignStorageFactory,
+)
 from semantic_context_server.application.dispatch.application_registry import ApplicationRegistry
-from semantic_context_server.application.ports.embedding_gateway import EmbeddingGateway
 from semantic_context_server.application.ports.event_bus import EventBus as EventBusPort
 
 # Ports
 from semantic_context_server.application.ports.executor import ExecutorPort
-from semantic_context_server.application.ports.llm import LLMServicePort
-from semantic_context_server.application.ports.storage_config import StorageConfigPort
 from semantic_context_server.application.runtime.campaign_manager import CampaignManager
 from semantic_context_server.application.runtime.campaign_runtime import CampaignRuntime
 from semantic_context_server.application.usecases.end_session_usecase import EndSessionUseCase
 from semantic_context_server.bootstrap.container import Container
 from semantic_context_server.config.loader import load_settings
-from semantic_context_server.infrastructure.cache.implementations.embedding_cache import (
-    EmbeddingCache,
-)
-from semantic_context_server.infrastructure.cache.implementations.semantic_cache import (
-    SemanticCache,
-)
 from semantic_context_server.infrastructure.events.blinker_event_bus import BlinkerEventBus
+from semantic_context_server.infrastructure.random.default_random import DefaultRandomProvider
 
 # Infra
 from semantic_context_server.infrastructure.runtime.bus.event_bus import EventBus as AsyncEventBus
 from semantic_context_server.infrastructure.runtime.executor.executor import Executor
-
-# Storage
-from semantic_context_server.infrastructure.storage.providers.campaign_storage_provider import (
-    CampaignStorageProvider,
-)
 from semantic_context_server.modules.memory_module import MemoryModule
 from semantic_context_server.modules.narrative_module import NarrativeModule
 from semantic_context_server.modules.rag_module import RAGModule
@@ -78,6 +83,18 @@ class ContainerBuilder:
 
     # ── build ─────────────────────────────────────────────────
 
+    def _build_semantic_cache(self) -> Any:
+        try:
+            from packages.features.semantic_cache import LegacySemanticCacheAdapter
+
+            return LegacySemanticCacheAdapter()
+        except ModuleNotFoundError:
+            return SemanticCache(kv_store=_DictKV())
+
+    def _build_storage_provider(self, storage_config: Any, executor: ExecutorPort) -> Any:
+        factory = LegacyCampaignStorageFactory(storage_config, executor)
+        return CampaignStorageService(factory)
+
     def build(
         self,
         campaign_id: str | None = None,
@@ -98,7 +115,7 @@ class ContainerBuilder:
         container.register(AsyncEventBus, async_event_bus)
 
         llm = self._llm if self._llm is not None else self._build_llm()
-        container.register(LLMServicePort, llm)
+        container.register(LLMGatewayContract, llm)
         container.llm = llm
         if self._embedding is not None:
             container.register(EmbeddingGateway, self._embedding)
@@ -110,21 +127,20 @@ class ContainerBuilder:
         container.register(ApplicationRegistry, app_registry)
 
         # Storage provider
-        storage_provider = CampaignStorageProvider(
-            cast(StorageConfigPort, storage_config),
-            cast(ExecutorPort, executor),
+        storage_provider = self._build_storage_provider(
+            storage_config, cast(ExecutorPort, executor)
         )
-        container.register(CampaignStorageProvider, storage_provider)
+        container.register(CampaignStorageProviderContract, storage_provider)
 
         # Campaign factory
         async def build_campaign(cid: str) -> CampaignRuntime:
-            provider = container.resolve(CampaignStorageProvider)
+            provider = container.resolve(CampaignStorageProviderContract)
             ctx = SimpleNamespace(
                 id=cid,
                 kv=provider.get(cid),
             )
             services: dict = {
-                "llm": container.resolve(LLMServicePort),
+                "llm": container.resolve(LLMGatewayContract),
                 "storage": ctx.kv,
                 "command_bus": container.command_bus,
                 "embedding": self._embedding,
@@ -133,7 +149,15 @@ class ContainerBuilder:
             services["memory"] = MemoryModule.build(container, ctx, services)
             services["narrative"] = NarrativeModule.build(container, ctx, services)
             services["embedding_cache"] = EmbeddingCache(kv_store=_DictKV(), client=self._embedding)
-            services["semantic_cache"] = SemanticCache(kv_store=_DictKV())
+            services["semantic_cache"] = self._build_semantic_cache()
+            services["roll_dice"] = DiceUseCase(
+                rng=DefaultRandomProvider(),
+                parser=DomainDiceParserAdapter(),
+                roller=DomainDiceRollerAdapter(),
+                analyzer=DomainDiceDistributionAnalyzerAdapter(),
+                executor=container.resolve(ExecutorPort),
+                enable_analysis=False,
+            )
             services["end_session"] = EndSessionUseCase(
                 memory_service=services["memory"],
                 llm=services["llm"],
@@ -165,7 +189,16 @@ class ContainerBuilder:
         return container
 
     def _build_llm(self) -> Any:
-        return lambda *args, **kwargs: None
+        settings = load_settings()
+        try:
+            provider = create_llm_provider(settings.llm)
+        except Exception as exc:  # pragma: no cover - explicit startup guard
+            raise RuntimeError(
+                f"Failed to build LLM provider for '{settings.llm.provider}'. "
+                "Set a valid LLM_PROVIDER/LLM_MODEL configuration."
+            ) from exc
+
+        return LLMService(provider=provider, timeout=float(settings.llm.timeout))
 
     # ── legacy tuple API (used by lifecycle.py) ───────────────
 

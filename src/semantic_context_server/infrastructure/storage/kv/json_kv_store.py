@@ -5,9 +5,9 @@ from pathlib import Path
 from threading import RLock
 from typing import Any, TypeVar
 
+from packages.core.shared_kernel.json_utils import load_json
 from semantic_context_server.application.ports.executor import ExecutorPort
 from semantic_context_server.infrastructure.serialization.json_serializer import JSONSerializer
-from semantic_context_server.shared.json_utils import load_json
 
 T = TypeVar("T")
 

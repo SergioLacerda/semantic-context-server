@@ -1,6 +1,6 @@
 import pytest
 
-from semantic_context_server.usecases.narrative_event import NarrativeUseCase
+from packages.features.rpg_engine import NarrativeUseCase
 from tests.config.fakes.application.memory.fake_memory_service import FakeMemoryService
 
 

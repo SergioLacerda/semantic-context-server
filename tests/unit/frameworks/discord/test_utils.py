@@ -1,10 +1,10 @@
 import pytest
 
-from semantic_context_server.frameworks.discord.utils.ids import (
+from semantic_context_server.interfaces.discord.utils.ids import (
     get_campaign_id,
     get_user_id,
 )
-from semantic_context_server.frameworks.discord.utils.messaging import (
+from semantic_context_server.interfaces.discord.utils.messaging import (
     MAX_MESSAGE_LEN,
     send_long_response,
 )

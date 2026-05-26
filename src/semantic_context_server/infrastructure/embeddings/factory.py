@@ -1,6 +1,8 @@
-from typing import Any
+from typing import Any, cast
 
-from semantic_context_server.application.ports.embedding_gateway import EmbeddingGateway
+from packages.features.embedding_gateway.contracts import (
+    EmbeddingGatewayContract as EmbeddingGateway,
+)
 from semantic_context_server.config.loader import EmbeddingSettings
 from semantic_context_server.infrastructure.embeddings.service.embedding_service import (
     EmbeddingService,
@@ -124,10 +126,13 @@ def create_embedding(
     )
 
     # 2. Retorna o Service que orquestra o lifecycle e resiliência
-    return EmbeddingService(
-        providers=[primary_provider],
-        target_dim=settings.dimension,
-        executor=executor,
-        timeout=settings.timeout,
-        cache=cache,
+    return cast(
+        EmbeddingGateway,
+        EmbeddingService(
+            providers=[primary_provider],
+            target_dim=settings.dimension,
+            executor=executor,
+            timeout=settings.timeout,
+            cache=cache,
+        ),
     )

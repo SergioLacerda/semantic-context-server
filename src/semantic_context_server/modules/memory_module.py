@@ -1,9 +1,9 @@
 from typing import Any
 
+from packages.features.llm_gateway.contracts import LLMGatewayContract
+from packages.features.prompt_engine_core.session_summarizer import SessionSummarizer
 from semantic_context_server.application.ports.executor import ExecutorPort
-from semantic_context_server.application.ports.llm import LLMServicePort
 from semantic_context_server.application.services.memory_service import MemoryService
-from semantic_context_server.domain.narrative.session_summarizer import SessionSummarizer
 from semantic_context_server.infrastructure.storage.repositories.narrative_memory_repository import (
     NarrativeMemoryRepository,
 )
@@ -24,7 +24,7 @@ class MemoryModule:
             repository=repo,
             campaign_id=ctx.id,
             summarizer=SessionSummarizer(),
-            llm_service=container.resolve(LLMServicePort),
+            llm_service=container.resolve(LLMGatewayContract),
             executor=container.resolve(ExecutorPort),
             vector_reader=services.get("vector_reader"),
             vector_writer=services.get("vector_writer"),

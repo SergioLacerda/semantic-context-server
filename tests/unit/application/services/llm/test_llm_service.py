@@ -2,10 +2,10 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
+from packages.features.llm_gateway.application.circuit_breaker import CircuitBreaker
+from packages.features.llm_gateway.application.llm_service import LLMService
 from semantic_context_server.application.dto.llm_request import LLMRequest
 from semantic_context_server.application.dto.llm_response import LLMResponse
-from semantic_context_server.application.services.llm.circuit_breaker import CircuitBreaker
-from semantic_context_server.application.services.llm.llm_service import LLMService
 
 # ==========================================================
 # HELPERS
@@ -49,7 +49,7 @@ def make_response(content="ok"):
 @pytest.mark.asyncio
 async def test_generate_calls_provider():
     with patch(
-        "semantic_context_server.application.services.llm.llm_service.resilient_call",
+        "packages.features.llm_gateway.application.llm_service.resilient_call",
         new=AsyncMock(return_value="ok"),
     ):
         service = LLMService(provider=MagicMock())
@@ -63,7 +63,7 @@ async def test_generate_calls_provider():
 @pytest.mark.asyncio
 async def test_generate_empty_response():
     with patch(
-        "semantic_context_server.application.services.llm.llm_service.resilient_call",
+        "packages.features.llm_gateway.application.llm_service.resilient_call",
         new=AsyncMock(return_value=""),
     ):
         service = LLMService(provider=MagicMock())
@@ -90,7 +90,7 @@ async def test_generate_returns_none_raises():
 @pytest.mark.asyncio
 async def test_generate_exception():
     with patch(
-        "semantic_context_server.application.services.llm.llm_service.resilient_call",
+        "packages.features.llm_gateway.application.llm_service.resilient_call",
         new=AsyncMock(side_effect=ValueError("fail")),
     ):
         service = LLMService(provider=MagicMock())
@@ -159,7 +159,7 @@ async def test_generate_sets_caches():
     manager.get.return_value = response_cache
 
     with patch(
-        "semantic_context_server.application.services.llm.llm_service.resilient_call",
+        "packages.features.llm_gateway.application.llm_service.resilient_call",
         new=AsyncMock(return_value="ok"),
     ):
         service = LLMService(
@@ -201,7 +201,7 @@ async def test_success_resets_circuit():
     cb = CircuitBreaker(failure_threshold=1)
 
     with patch(
-        "semantic_context_server.application.services.llm.llm_service.resilient_call",
+        "packages.features.llm_gateway.application.llm_service.resilient_call",
         new=AsyncMock(return_value="ok"),
     ):
         service = LLMService(
@@ -221,7 +221,7 @@ async def test_failure_triggers_circuit():
     cb = CircuitBreaker(failure_threshold=1)
 
     with patch(
-        "semantic_context_server.application.services.llm.llm_service.resilient_call",
+        "packages.features.llm_gateway.application.llm_service.resilient_call",
         new=AsyncMock(side_effect=ValueError()),
     ):
         service = LLMService(

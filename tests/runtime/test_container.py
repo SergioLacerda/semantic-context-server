@@ -1,7 +1,7 @@
 import pytest
 
+from packages.features.llm_gateway.contracts import LLMGatewayContract
 from semantic_context_server.application.dto.llm_request import LLMRequest
-from semantic_context_server.application.ports.llm import LLMServicePort
 from tests.config.composition.test_container_builder import ContainerTestFactory
 from tests.config.fakes.infrastructure.llm.fake_llm_service import FakeLLMService
 
@@ -11,7 +11,7 @@ async def test_container_builds_core(container):
 
     assert container.embedding is not None
     assert campaign.vector_index is not None
-    assert isinstance(container.llm, LLMServicePort)
+    assert isinstance(container.llm, LLMGatewayContract)
 
 
 def test_container_lazy_loading():
@@ -41,12 +41,12 @@ async def test_narrative_usecase_wiring(container):
     assert usecase.llm is not None
     assert campaign.vector_index is not None
 
-    assert isinstance(usecase.llm, LLMServicePort)
+    assert isinstance(usecase.llm, LLMGatewayContract)
 
 
 @pytest.mark.asyncio
 async def test_llm_integration(container):
-    assert isinstance(container.llm, LLMServicePort)
+    assert isinstance(container.llm, LLMGatewayContract)
 
     response = await container.llm.generate(LLMRequest(prompt="teste", campaign_id="c1"))
 

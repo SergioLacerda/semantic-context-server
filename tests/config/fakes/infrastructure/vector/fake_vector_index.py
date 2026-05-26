@@ -1,10 +1,8 @@
 import math
 from typing import Any
 
-from semantic_context_server.application.ports.vector_index_gateway import (
-    VectorIndexGateway,
-)
-from semantic_context_server.shared.hash_utils import sha256_hash
+from packages.core.shared_kernel.hash_utils import sha256_hash
+from packages.features.vector_index.contracts import VectorIndexGateway
 
 
 # ==========================================================

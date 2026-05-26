@@ -1,6 +1,8 @@
 import pytest
 
-from semantic_context_server.application.ports.embedding_gateway import EmbeddingGateway
+from packages.features.embedding_gateway.contracts import (
+    EmbeddingGatewayContract as EmbeddingGateway,
+)
 from tests.contracts.framework.rules.port_compliance_rule import ensure_port_compliance
 
 

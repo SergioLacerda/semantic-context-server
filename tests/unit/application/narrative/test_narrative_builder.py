@@ -1,6 +1,6 @@
 import pytest
 
-from semantic_context_server.domain.narrative.narrative_builder import NarrativeBuilder
+from packages.features.prompt_engine_core.narrative_builder import NarrativeBuilder
 from tests.utils.assertions import (
     assert_prompt_has,
     assert_prompt_semantic,

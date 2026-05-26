@@ -2,7 +2,7 @@ import asyncio
 
 import pytest
 
-from semantic_context_server.infrastructure.rag.retrieval_engine import RetrievalEngine
+from packages.features.vector_index.retrieval_engine import RetrievalEngine
 from tests.config.fakes.infrastructure.retrieval import (
     DummyIndex,
 )
@@ -159,7 +159,7 @@ async def test_semantic_cache_skips_search(engine):
 
 @pytest.mark.asyncio
 async def test_get_index_default():
-    from semantic_context_server.infrastructure.rag.retrieval_engine import RetrievalEngine
+    from packages.features.vector_index.retrieval_engine import RetrievalEngine
 
     index = FakeIndex(["ok"])
 
@@ -177,7 +177,7 @@ async def test_get_index_default():
 
 @pytest.mark.asyncio
 async def test_get_index_with_factory():
-    from semantic_context_server.infrastructure.rag.retrieval_engine import RetrievalEngine
+    from packages.features.vector_index.retrieval_engine import RetrievalEngine
 
     def factory(cid):
         return FakeIndex([cid])
@@ -197,7 +197,7 @@ async def test_get_index_with_factory():
 
 @pytest.mark.asyncio
 async def test_semantic_cache_hit():
-    from semantic_context_server.infrastructure.rag.retrieval_engine import RetrievalEngine
+    from packages.features.vector_index.retrieval_engine import RetrievalEngine
 
     cache = AsyncDummySemanticCache()
     await cache.set("q", None, ["cached"])
@@ -216,7 +216,7 @@ async def test_semantic_cache_hit():
 
 @pytest.mark.asyncio
 async def test_inflight_dedup():
-    from semantic_context_server.infrastructure.rag.retrieval_engine import RetrievalEngine
+    from packages.features.vector_index.retrieval_engine import RetrievalEngine
 
     index = FakeIndex(["ok"])
 
@@ -238,7 +238,7 @@ async def test_inflight_dedup():
 
 @pytest.mark.asyncio
 async def test_execute_with_executor():
-    from semantic_context_server.infrastructure.rag.retrieval_engine import RetrievalEngine
+    from packages.features.vector_index.retrieval_engine import RetrievalEngine
 
     class FakeExecutor:
         async def run(self, fn, *args, **kwargs):
@@ -262,7 +262,7 @@ async def test_execute_with_executor():
 @pytest.mark.slow
 @pytest.mark.asyncio
 async def test_hedged_search():
-    from semantic_context_server.infrastructure.rag.retrieval_engine import RetrievalEngine
+    from packages.features.vector_index.retrieval_engine import RetrievalEngine
 
     class SlowIndex:
         async def search(self, query, q_vec, k):
@@ -285,7 +285,7 @@ async def test_hedged_search():
 
 @pytest.mark.asyncio
 async def test_inflight_cleanup():
-    from semantic_context_server.infrastructure.rag.retrieval_engine import RetrievalEngine
+    from packages.features.vector_index.retrieval_engine import RetrievalEngine
 
     index = FakeIndex(["ok"])
 
@@ -303,7 +303,7 @@ async def test_inflight_cleanup():
 
 @pytest.mark.asyncio
 async def test_get_index_cached_instance():
-    from semantic_context_server.infrastructure.rag.retrieval_engine import RetrievalEngine
+    from packages.features.vector_index.retrieval_engine import RetrievalEngine
 
     calls = {"count": 0}
 

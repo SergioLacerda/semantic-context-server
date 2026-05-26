@@ -1,6 +1,6 @@
 from typing import Any
 
-from semantic_context_server.application.services.benchmark_analysis import (
+from packages.features.benchmark_engine.application.benchmark_analysis import (
     compute_score,
     extract_winner,
     rank_strategies,

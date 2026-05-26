@@ -1,4 +1,4 @@
-from semantic_context_server.application.ports.vector_writer_port import VectorWriterPort
+from packages.features.vector_index.contracts import VectorWriterPort
 
 
 class FakeVectorMemory(VectorWriterPort):

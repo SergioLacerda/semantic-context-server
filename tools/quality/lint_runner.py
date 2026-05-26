@@ -55,7 +55,19 @@ def run_lint_check() -> None:
         "text io centralization guard",
         ["uv", "run", "python", "tools/ci/check_text_io_centralization.py"],
     )
+    run_step(
+        "env access boundary guard",
+        ["uv", "run", "python", "tools/ci/check_env_access_boundaries.py"],
+    )
+    run_step(
+        "hermetic test path guard",
+        ["uv", "run", "python", "tools/ci/check_test_hermetic_paths.py"],
+    )
     run_step("import cycle guard", ["uv", "run", "python", "tools/ci/check_import_cycles.py"])
+    run_step(
+        "package boundary guard",
+        ["uv", "run", "python", "tools/ci/check_package_boundaries.py"],
+    )
     run_import_linter_guard()
     # Ruff F401/F841 break on unused imports/locals; lint-fix applies auto-fix when possible.
     run_step("ruff check", ["uv", "run", "ruff", "check", "src", "tests"])

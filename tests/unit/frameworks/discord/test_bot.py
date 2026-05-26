@@ -3,7 +3,7 @@ from unittest.mock import MagicMock
 import pytest
 from discord.ext import commands
 
-from semantic_context_server.frameworks.discord.bot import create_bot
+from packages.interfaces.discord_bot import create_bot
 from tests.config.factories.framework.context import make_context
 from tests.config.factories.framework.deps import make_deps
 from tests.config.factories.framework.help import make_help
@@ -17,7 +17,7 @@ from tests.config.helpers.discord_factory import DummySettings
 @pytest.fixture(autouse=True)
 def mock_help_command(monkeypatch):
     monkeypatch.setattr(
-        "semantic_context_server.frameworks.discord.bot.register_help_commands",
+        "packages.interfaces.discord_bot.bot.register_help_commands",
         lambda bot, registry: make_help(),
     )
 

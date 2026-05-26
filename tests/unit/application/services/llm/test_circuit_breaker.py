@@ -1,6 +1,6 @@
 import time
 
-from semantic_context_server.application.services.llm.circuit_breaker import CircuitBreaker
+from packages.features.llm_gateway.application.circuit_breaker import CircuitBreaker
 
 
 def test_initial_state():

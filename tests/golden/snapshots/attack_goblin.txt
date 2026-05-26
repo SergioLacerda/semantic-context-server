@@ -1,0 +1,1 @@
+Response(text='you attack the goblin', type='narrative', metadata={'intent': 'DEFAULT', 'scene_type': 'DEFAULT'})

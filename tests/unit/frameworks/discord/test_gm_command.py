@@ -1,6 +1,6 @@
 import pytest
 
-from semantic_context_server.frameworks.discord.adapters.gm_commands import (
+from semantic_context_server.interfaces.discord.adapters.gm_commands import (
     register_gm_commands,
 )
 from tests.config.factories.framework.bot import make_bot

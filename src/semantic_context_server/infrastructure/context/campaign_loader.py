@@ -2,8 +2,8 @@ import logging
 from pathlib import Path
 from typing import Any
 
-from semantic_context_server.shared.execution import on_executor
-from semantic_context_server.shared.text_io import read_text_utf8
+from packages.core.shared_kernel.execution import on_executor
+from packages.core.shared_kernel.text_io import read_text_utf8
 
 logger = logging.getLogger(__name__)
 

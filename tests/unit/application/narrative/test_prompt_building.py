@@ -1,7 +1,7 @@
 import pytest
 
+from packages.features.rpg_engine import NarrativeUseCase
 from semantic_context_server.domain.rag.context_builder import ContextBuilder
-from semantic_context_server.usecases.narrative_event import NarrativeUseCase
 from tests.config.fakes.application.memory.fake_memory_service import FakeMemoryService
 from tests.config.fakes.infrastructure.llm.fake_llm import DummyLLM
 from tests.utils.assertions import (

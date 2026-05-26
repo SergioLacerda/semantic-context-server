@@ -2,7 +2,7 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from semantic_context_server.frameworks.discord.adapters.campaign_commands import (
+from semantic_context_server.interfaces.discord.adapters.campaign_commands import (
     register_campaign_commands,
 )
 from tests.config.factories.framework.bot import make_bot

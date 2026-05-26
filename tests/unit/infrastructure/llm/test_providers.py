@@ -1,18 +1,20 @@
 import pytest
 
-import semantic_context_server.infrastructure.adapters.llm as providers_mod
-from semantic_context_server.application.dto.llm_request import LLMRequest
-from semantic_context_server.application.services.llm.llm_errors import (
+import packages.features.llm_gateway.infrastructure.providers as providers_mod
+from packages.features.llm_gateway.application.llm_errors import (
     LLMClientError,
     LLMRetryableError,
 )
-from semantic_context_server.infrastructure.adapters.llm.base_provider import BaseProvider
-from semantic_context_server.infrastructure.adapters.llm.deepseek_provider import (
+from packages.features.llm_gateway.infrastructure.base_provider import BaseProvider
+from packages.features.llm_gateway.infrastructure.providers.deepseek_provider import (
     DeepSeekProvider,
 )
-from semantic_context_server.infrastructure.adapters.llm.lmstudio_provider import LMStudioProvider
-from semantic_context_server.infrastructure.adapters.llm.ollama_provider import OllamaProvider
-from semantic_context_server.infrastructure.adapters.llm.openai_provider import OpenAIProvider
+from packages.features.llm_gateway.infrastructure.providers.lmstudio_provider import (
+    LMStudioProvider,
+)
+from packages.features.llm_gateway.infrastructure.providers.ollama_provider import OllamaProvider
+from packages.features.llm_gateway.infrastructure.providers.openai_provider import OpenAIProvider
+from semantic_context_server.application.dto.llm_request import LLMRequest
 from tests.config.fakes.infrastructure.llm.fake_responses import (
     FakeOllamaResponse,
     FakeResponseEmpty,

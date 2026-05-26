@@ -40,6 +40,7 @@ MANIFEST
 .cursor
 .codex
 .github/prompts
+.github/skills
 GEMINI.md
 AGENTS.md
 CLAUDE.md
@@ -68,6 +69,7 @@ coverage.xml
 .hypothesis/
 .pytest_cache/
 cover/
+.import_linter_cache
 
 # Translations
 *.mo

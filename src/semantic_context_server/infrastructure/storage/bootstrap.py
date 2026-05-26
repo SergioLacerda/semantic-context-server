@@ -1,7 +1,7 @@
 from pathlib import Path
 from typing import Any
 
-from semantic_context_server.shared.json_utils import save_json
+from packages.core.shared_kernel.json_utils import save_json
 
 DEFAULT_FILES: dict[str, Any] = {
     "documents.json": {},

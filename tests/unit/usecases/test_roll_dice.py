@@ -2,16 +2,12 @@ from typing import Any
 
 import pytest
 
-from semantic_context_server.application.contracts.response import Response
-from semantic_context_server.domain.dice.ast.nodes import RollNode
-from semantic_context_server.domain.dice.value_objects import DiceExpression
-from semantic_context_server.infrastructure.random.default_random import DefaultRandomProvider
-from semantic_context_server.interfaces.dice.parser_adapter import DiceParserAdapter
-from semantic_context_server.usecases.roll_dice import RollDiceUseCase
+from packages.features.rpg_engine.dice_usecase import DiceUseCase
 
-# ==========================================================
-# MOCKS
-# ==========================================================
+
+class MockRng:
+    def roll(self, sides: int) -> int:
+        return max(1, min(sides, 3))
 
 
 class MockParser:
@@ -25,22 +21,26 @@ class MockParser:
         return self.result
 
 
-# ---------------------------------------------------------
-# HELPERS
-# ---------------------------------------------------------
+class MockRoller:
+    def __init__(self, rolls: list[int] | None = None, fail: bool = False):
+        self.rolls = rolls or [1]
+        self.fail = fail
+
+    def roll(self, ast: Any, rng: Any) -> tuple[list[int], int]:
+        if self.fail:
+            raise Exception("boom")
+        return self.rolls, sum(self.rolls)
 
 
-@pytest.fixture
-def usecase():
-    return RollDiceUseCase(
-        rng=DefaultRandomProvider(),
-        parser=DiceParserAdapter(),
-        executor=None,
-    )
+class MockAnalyzer:
+    def __init__(self, result: Any = None, fail: bool = False):
+        self.result = result if result is not None else {"p": [1.0]}
+        self.fail = fail
 
-
-def data(response: Response) -> dict:
-    return response.metadata or {}
+    def analyze(self, ast: Any) -> Any:
+        if self.fail:
+            raise Exception("analysis boom")
+        return self.result
 
 
 class FakeAST:
@@ -50,141 +50,109 @@ class FakeAST:
 
 @pytest.mark.unit
 @pytest.mark.asyncio
-async def test_roll_dice_invalid(usecase):
+async def test_roll_dice_invalid_expression_returns_error():
+    usecase = DiceUseCase(
+        rng=MockRng(),
+        parser=MockParser(result=None),
+        roller=MockRoller(),
+        analyzer=MockAnalyzer(),
+        executor=None,
+        enable_analysis=False,
+    )
+
     result = await usecase.execute("invalid")
 
     assert result.type == "error"
-    assert data(result)["error"] == "Invalid dice expression"
+    assert (result.metadata or {}).get("error") == "Invalid dice expression"
 
 
 @pytest.mark.unit
 @pytest.mark.asyncio
-async def test_roll_dice_usecase(usecase):
-    result = await usecase.execute(DiceExpression(2, 6, 1))
-
-    d = data(result)
-
-    assert isinstance(d["total"], int)
-    assert "rolls" in d
-
-
-@pytest.mark.unit
-@pytest.mark.asyncio
-async def test_roll_dice_with_expression(usecase):
-    result = await usecase.execute(DiceExpression(2, 6))
-
-    assert data(result)["total"] > 0
-
-
-@pytest.mark.unit
-@pytest.mark.asyncio
-async def test_roll_dice_with_analysis(usecase):
-    usecase.enable_analysis = True
-
-    result = await usecase.execute(DiceExpression(1, 6))
-
-    assert "distribution" in data(result)
-
-
-@pytest.mark.unit
-@pytest.mark.asyncio
-async def test_roll_dice_analysis_failure(usecase, monkeypatch):
-    monkeypatch.setattr(
-        "semantic_context_server.application.usecases.roll_dice_usecase.analyze_distribution",
-        lambda ast: (_ for _ in ()).throw(Exception()),
-    )
-
-    usecase.enable_analysis = True
-
-    result = await usecase.execute(DiceExpression(1, 6))
-
-    assert data(result)["distribution"] is None
-
-
-@pytest.mark.unit
-@pytest.mark.asyncio
-async def test_roll_dice_parser_path():
-    class FakeParser:
-        def parse(self, expr: str) -> Any:
-            return RollNode(1, 6)
-
-    usecase = RollDiceUseCase(
-        rng=DefaultRandomProvider(),
-        parser=FakeParser(),
+async def test_roll_dice_with_string_expression():
+    usecase = DiceUseCase(
+        rng=MockRng(),
+        parser=MockParser(result=FakeAST()),
+        roller=MockRoller([2, 4]),
+        analyzer=MockAnalyzer(),
         executor=None,
+        enable_analysis=False,
     )
 
     result = await usecase.execute("1d6")
 
-    assert data(result)["total"] > 0
+    assert result.type == "dice"
+    assert result.metadata is not None
+    assert result.metadata["total"] == 6
+    assert result.metadata["rolls"] == [2, 4]
 
 
 @pytest.mark.unit
 @pytest.mark.asyncio
-async def test_invalid_expression_returns_error():
-    parser = MockParser(result=None)
-
-    usecase = RollDiceUseCase(
-        rng=None,
-        parser=parser,
+async def test_roll_dice_with_ast_expression():
+    usecase = DiceUseCase(
+        rng=MockRng(),
+        parser=MockParser(),
+        roller=MockRoller([3, 3]),
+        analyzer=MockAnalyzer(),
         executor=None,
+        enable_analysis=False,
     )
 
-    result = await usecase.execute("invalid")
+    result = await usecase.execute(FakeAST())
 
-    assert result.type == "error"
-    assert "Invalid dice expression" in result.text
+    assert result.type == "dice"
+    assert result.metadata is not None
+    assert result.metadata["total"] == 6
 
 
 @pytest.mark.unit
 @pytest.mark.asyncio
-async def test_invalid_type_returns_error():
-    parser = MockParser()
-
-    usecase = RollDiceUseCase(
-        rng=None,
-        parser=parser,
+async def test_roll_dice_with_analysis_enabled():
+    usecase = DiceUseCase(
+        rng=MockRng(),
+        parser=MockParser(result=FakeAST()),
+        roller=MockRoller([1, 5]),
+        analyzer=MockAnalyzer(result={"p": [0.5, 0.5]}),
         executor=None,
+        enable_analysis=True,
     )
 
-    result = await usecase.execute(123)
+    result = await usecase.execute("1d6")
 
-    assert result.type == "error"
+    assert result.metadata is not None
+    assert "distribution" in result.metadata
+    assert result.metadata["distribution"] == {"p": [0.5, 0.5]}
 
 
 @pytest.mark.unit
 @pytest.mark.asyncio
-async def test_parse_exception():
-    parser = MockParser(error=True)
-
-    usecase = RollDiceUseCase(
-        rng=None,
-        parser=parser,
+async def test_roll_dice_analysis_failure_returns_none_distribution():
+    usecase = DiceUseCase(
+        rng=MockRng(),
+        parser=MockParser(result=FakeAST()),
+        roller=MockRoller([1, 5]),
+        analyzer=MockAnalyzer(fail=True),
         executor=None,
+        enable_analysis=True,
     )
 
-    result = await usecase.execute("2d6")
+    result = await usecase.execute("1d6")
 
-    assert result.type == "error"
+    assert result.type == "dice"
+    assert result.metadata is not None
+    assert result.metadata.get("distribution") is None
 
 
 @pytest.mark.unit
 @pytest.mark.asyncio
-async def test_roll_exception(monkeypatch):
-    parser = MockParser(result=FakeAST())
-
-    usecase = RollDiceUseCase(
-        rng=None,
-        parser=parser,
+async def test_roll_exception_returns_error():
+    usecase = DiceUseCase(
+        rng=MockRng(),
+        parser=MockParser(result=FakeAST()),
+        roller=MockRoller(fail=True),
+        analyzer=MockAnalyzer(),
         executor=None,
-    )
-
-    def fake_roll(ast, rng):
-        raise Exception("boom")
-
-    monkeypatch.setattr(
-        "semantic_context_server.application.usecases.roll_dice_usecase.roll",
-        fake_roll,
+        enable_analysis=False,
     )
 
     result = await usecase.execute("2d6")
@@ -195,31 +163,33 @@ async def test_roll_exception(monkeypatch):
 
 @pytest.mark.unit
 @pytest.mark.asyncio
-async def test_expression_with_evaluate_method(monkeypatch):
-    class CustomExpression:
-        def evaluate(self):
-            return 42
-
-    class MockParserLocal:
-        def parse(self, expression: str) -> Any:
-            return None
-
-    usecase = RollDiceUseCase(
-        rng=None,
-        parser=MockParserLocal(),
+async def test_invalid_input_type_returns_error():
+    usecase = DiceUseCase(
+        rng=MockRng(),
+        parser=MockParser(),
+        roller=MockRoller(),
+        analyzer=MockAnalyzer(),
         executor=None,
+        enable_analysis=False,
     )
 
-    def fake_roll(ast, rng):
-        return [1, 2, 3], 6
+    result = await usecase.execute(123)
 
-    monkeypatch.setattr(
-        "semantic_context_server.application.usecases.roll_dice_usecase.roll",
-        fake_roll,
+    assert result.type == "error"
+
+
+@pytest.mark.unit
+@pytest.mark.asyncio
+async def test_parse_exception_returns_error():
+    usecase = DiceUseCase(
+        rng=MockRng(),
+        parser=MockParser(error=True),
+        roller=MockRoller(),
+        analyzer=MockAnalyzer(),
+        executor=None,
+        enable_analysis=False,
     )
 
-    result = await usecase.execute(CustomExpression())
+    result = await usecase.execute("2d6")
 
-    assert result.type == "dice"
-    assert result.metadata is not None
-    assert result.metadata["total"] == 6
+    assert result.type == "error"

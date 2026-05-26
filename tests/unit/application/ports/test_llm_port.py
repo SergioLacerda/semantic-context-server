@@ -1,6 +1,6 @@
 import pytest
 
-from semantic_context_server.application.ports.llm import LLMServicePort
+from packages.features.llm_gateway.contracts import LLMGatewayContract
 from tests.config.fakes.infrastructure.llm.fake_llm_request_factory import FakeLLMRequestFactory
 
 
@@ -9,7 +9,7 @@ from tests.config.fakes.infrastructure.llm.fake_llm_request_factory import FakeL
 async def test_llm_port_contract(container):
     llm = container.llm
 
-    assert isinstance(llm, LLMServicePort)
+    assert isinstance(llm, LLMGatewayContract)
 
     result = await llm.generate(FakeLLMRequestFactory.simple("hello"))
 

@@ -1,10 +1,9 @@
 from types import SimpleNamespace
 from typing import Any
 
-from semantic_context_server.application.ports.vector_reader_port import VectorReaderPort
-from semantic_context_server.application.ports.vector_writer_port import VectorWriterPort
-from semantic_context_server.infrastructure.rag.vector_reader_service import VectorReaderService
-from semantic_context_server.infrastructure.rag.vector_writer_service import VectorWriterService
+from packages.features.vector_index.contracts import VectorReaderPort, VectorWriterPort
+from packages.features.vector_index.reader import VectorReaderService
+from packages.features.vector_index.writer import VectorWriterService
 
 
 class RAGModule:

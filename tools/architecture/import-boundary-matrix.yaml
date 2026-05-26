@@ -1,0 +1,29 @@
+version: 1
+status: migration-baseline
+
+layers:
+  - apps
+  - interfaces
+  - features
+  - core
+
+rules:
+  - from: apps
+    to: [interfaces, features]
+    allowed: true
+  - from: interfaces
+    to: [features]
+    allowed: true
+  - from: features
+    to: [core]
+    allowed: true
+  - from: core
+    to: [features, interfaces, apps]
+    allowed: false
+  - from: features
+    to: [interfaces, apps]
+    allowed: false
+
+notes:
+  - "Cross-feature imports are allowed only via public contracts/exports."
+  - "This file is the canonical matrix for future lint/CI checks."

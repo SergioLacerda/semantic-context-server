@@ -2,12 +2,12 @@ from typing import Any
 
 from fastapi import APIRouter, Depends, Query
 
-from semantic_context_server.application.dto.benchmark_request import (
-    BenchmarkRequest,
-)
-from semantic_context_server.application.usecases.run_benchmark_usecase import (
+from packages.features.benchmark_engine.application.run_benchmark_usecase import (
     CompareBenchmarkInput,
     RunBenchmarkInput,
+)
+from semantic_context_server.application.dto.benchmark_request import (
+    BenchmarkRequest,
 )
 from semantic_context_server.interfaces.api.dependencies import get_container
 

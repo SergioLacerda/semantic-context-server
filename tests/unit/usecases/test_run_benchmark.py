@@ -1,12 +1,12 @@
 import pytest
 
-from semantic_context_server.application.dto.benchmark_strategy import (
-    BenchmarkStrategy,
-)
-from semantic_context_server.usecases.run_benchmark import (
+from packages.features.benchmark_engine.application.run_benchmark_usecase import (
     CompareBenchmarkInput,
     RunBenchmarkInput,
     RunBenchmarkUseCase,
+)
+from semantic_context_server.application.dto.benchmark_strategy import (
+    BenchmarkStrategy,
 )
 
 # ==========================================================

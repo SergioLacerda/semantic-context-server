@@ -6,9 +6,9 @@ import threading
 from pathlib import Path
 from typing import Any, TypeVar
 
+from packages.core.shared_kernel.text_io import read_text_utf8
 from semantic_context_server.application.ports.executor import ExecutorPort
 from semantic_context_server.infrastructure.serialization.json_serializer import JSONSerializer
-from semantic_context_server.shared.text_io import read_text_utf8
 
 logger = logging.getLogger(__name__)
 

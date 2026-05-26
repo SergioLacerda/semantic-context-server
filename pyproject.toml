@@ -96,6 +96,7 @@ server-benchmark = "semantic_context_server.interfaces.cli.benchmark_cli:cli"
 testpaths = ["tests"]
 asyncio_mode = "auto"
 cache_dir = "build/.pytest_cache"
+pythonpath = ["."]
 
 norecursedirs = [
     "*.egg",
@@ -239,15 +240,50 @@ line-ending = "auto"
 # 🏛️ IMPORT-LINTER
 # ---------------------------------------------------------
 [tool.importlinter]
-root_package = "semantic_context_server"
+root_packages = ["semantic_context_server", "packages", "apps"]
 
+# Legacy contract — covers src/semantic_context_server during migration
 [[tool.importlinter.contracts]]
-name = "Clean Architecture"
+name = "Clean Architecture (legacy src)"
 type = "layers"
 layers = [
     "interfaces",
-    "frameworks",
     "infrastructure",
     "application",
     "domain",
 ]
+containers = ["semantic_context_server"]
+
+# New contract — enforces four-layer hierarchy in packages/
+[[tool.importlinter.contracts]]
+name = "Modular Monorepo — Layer Hierarchy"
+type = "layers"
+layers = [
+    "packages.interfaces",
+    "packages.features",
+    "packages.core",
+]
+
+# New contract — features may only import another feature's contracts.py, never its internals
+[[tool.importlinter.contracts]]
+name = "Feature Package Independence"
+type = "independence"
+modules = [
+    "packages.features.llm_gateway",
+    "packages.features.vector_index",
+    "packages.features.rpg_engine",
+    "packages.features.embedding_gateway",
+    "packages.features.semantic_cache",
+    "packages.features.benchmark_engine",
+    "packages.features.storage",
+]
+ignore_imports = [
+    "packages.features.vector_index.service -> packages.features.embedding_gateway.contracts",
+]
+
+# New contract — shared_kernel must not import from features or interfaces
+[[tool.importlinter.contracts]]
+name = "shared_kernel — No Upward Dependencies"
+type = "forbidden"
+source_modules = ["packages.core.shared_kernel"]
+forbidden_modules = ["packages.features", "packages.interfaces", "apps"]

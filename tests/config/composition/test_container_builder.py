@@ -3,9 +3,11 @@ import uuid
 from dataclasses import replace
 from pathlib import Path
 
-from semantic_context_server.application.ports.embedding_gateway import EmbeddingGateway
+from packages.features.embedding_gateway.contracts import (
+    EmbeddingGatewayContract as EmbeddingGateway,
+)
+from packages.features.llm_gateway.contracts import LLMGatewayContract
 from semantic_context_server.application.ports.interaction_runtime import InteractionRuntimePort
-from semantic_context_server.application.ports.llm import LLMServicePort
 from semantic_context_server.application.ports.storage_types import (
     StorageBackends,
     StorageKinds,
@@ -147,7 +149,7 @@ class ContainerTestFactory:
         # ✔ World Class: Blindagem contra configurações acidentais de .env
         time_provider = getattr(self._state, "time_provider", None)
         overrides_map = {
-            LLMServicePort: self._state.llm,
+            LLMGatewayContract: self._state.llm,
             EmbeddingGateway: self._state.embedding,
             InteractionRuntimePort: time_provider,
         }
@@ -164,7 +166,7 @@ class ContainerTestFactory:
         # 🔥 GARANTIA: LLM fake
         # -------------------------------------------------
 
-        llm = container.resolve(LLMServicePort)
+        llm = container.resolve(LLMGatewayContract)
 
         assert "Fake" in type(llm).__name__, f"🚨 LLM real detectado: {type(llm)}"
 

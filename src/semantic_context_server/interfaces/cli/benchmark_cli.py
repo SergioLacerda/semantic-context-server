@@ -2,7 +2,7 @@ import argparse
 import asyncio
 from typing import Any
 
-from semantic_context_server.application.usecases.run_benchmark_usecase import (
+from packages.features.benchmark_engine.application.run_benchmark_usecase import (
     RunBenchmarkInput,
 )
 from semantic_context_server.bootstrap.container import Container
