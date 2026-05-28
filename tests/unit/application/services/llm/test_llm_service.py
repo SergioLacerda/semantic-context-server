@@ -4,8 +4,7 @@ import pytest
 
 from packages.features.llm_gateway.application.circuit_breaker import CircuitBreaker
 from packages.features.llm_gateway.application.llm_service import LLMService
-from semantic_context_server.application.dto.llm_request import LLMRequest
-from semantic_context_server.application.dto.llm_response import LLMResponse
+from packages.features.llm_gateway.dto import LLMRequest, LLMResponse
 
 # ==========================================================
 # HELPERS

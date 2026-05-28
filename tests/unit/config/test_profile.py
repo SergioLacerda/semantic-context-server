@@ -1,6 +1,6 @@
 import pytest
 
-from semantic_context_server.config.profile import (
+from packages.core.runtime_config.profile import (
     DEFAULT_PROFILE,
     build_profile,
     get_profile_defaults,

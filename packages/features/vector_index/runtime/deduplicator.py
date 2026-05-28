@@ -5,7 +5,7 @@ import time
 from collections.abc import Callable, Coroutine
 from typing import Any
 
-from semantic_context_server.application.ports.executor import ExecutorPort
+from packages.core.shared_kernel.execution import ExecutorPort
 
 logger = logging.getLogger(__name__)
 

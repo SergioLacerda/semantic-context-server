@@ -55,19 +55,18 @@ def test_storage_service_clear_and_clear_all() -> None:
     assert second is not third
 
 
-def test_legacy_campaign_storage_factory_delegates_builder(monkeypatch) -> None:
+def test_legacy_campaign_storage_factory_delegates_builder() -> None:
     calls: list[tuple[str, str, str]] = []
 
     def fake_build_campaign_storage(config, campaign_id, executor):
         calls.append((str(config), campaign_id, str(executor)))
         return {"campaign_id": campaign_id}
 
-    monkeypatch.setattr(
-        "semantic_context_server.infrastructure.storage.campaign_storage_factory.build_campaign_storage",
-        fake_build_campaign_storage,
+    factory = LegacyCampaignStorageFactory(
+        config="cfg",
+        executor="exe",
+        builder=fake_build_campaign_storage,
     )
-
-    factory = LegacyCampaignStorageFactory(config="cfg", executor="exe")
     out = factory.build("c1")
 
     assert out == {"campaign_id": "c1"}

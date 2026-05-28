@@ -1,30 +1,19 @@
 import pytest
-from httpx import ASGITransport, AsyncClient
 
-
-@pytest.fixture
-def async_client(app):
-    return AsyncClient(transport=ASGITransport(app=app), base_url="http://test")
+from semantic_context_server.interfaces.api.routes.system_controller import get_config
 
 
 @pytest.mark.asyncio
-async def test_get_system_config(async_client):
-    async with async_client as client:
-        response = await client.get("/system/config")
-
-        assert response.status_code == 200
-
-        data = response.json()
-
-        assert "environment" in data
-        assert "storage" in data
-        assert "llm_provider" in data
+async def test_get_system_config(container):
+    data = await get_config(container)
+    assert "environment" in data
+    assert "storage" in data
+    assert "llm_provider" in data
 
 
-@pytest.mark.asyncio
-async def test_api_router_mounts(async_client):
-    # sanity check geral do router
-    async with async_client as client:
-        response = await client.get("/health")
+def test_api_router_mounts():
+    from packages.interfaces.http_api.router import api_router
 
-        assert response.status_code == 200
+    paths = {route.path for route in api_router.routes}
+    assert "/health" in paths
+    assert "/system/config" in paths

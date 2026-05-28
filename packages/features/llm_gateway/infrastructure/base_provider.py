@@ -2,8 +2,8 @@ import time
 from abc import ABC, abstractmethod
 from typing import Any
 
-from semantic_context_server.application.dto.llm_request import LLMRequest
-from semantic_context_server.application.dto.llm_response import LLMResponse
+from packages.features.llm_gateway.dto import LLMRequest
+from packages.features.llm_gateway.dto import LLMResponse
 from packages.features.llm_gateway.application.error_mapper import map_http_error
 from packages.features.llm_gateway.application.llm_errors import (
     LLMClientError,

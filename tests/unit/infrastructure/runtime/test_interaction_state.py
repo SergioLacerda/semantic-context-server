@@ -1,8 +1,6 @@
 import asyncio
 
-from semantic_context_server.infrastructure.runtime.interaction_state import (
-    InteractionState,
-)
+from packages.core.bootstrap_runtime.runtime_scope import InteractionState
 
 # ==========================================================
 # TIME HELPER (SEM MONKEYPATCH 🔥)

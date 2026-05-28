@@ -4,8 +4,8 @@ import logging
 from typing import Any
 
 from packages.features.prompt_engine_rpg import RPGPromptEngine
-from semantic_context_server.application.contracts.response import Response
-from semantic_context_server.application.dto.llm_request import LLMRequest
+from packages.features.rpg_engine.response import Response
+from packages.features.llm_gateway.contracts import LLMRequest
 
 logger = logging.getLogger(__name__)
 

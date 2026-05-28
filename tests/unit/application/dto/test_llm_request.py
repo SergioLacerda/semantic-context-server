@@ -1,6 +1,6 @@
 import pytest
 
-from semantic_context_server.application.dto.llm_request import LLMRequest
+from packages.features.llm_gateway.dto import LLMRequest
 
 # ---------------------------------------------------------
 # SUCESSO

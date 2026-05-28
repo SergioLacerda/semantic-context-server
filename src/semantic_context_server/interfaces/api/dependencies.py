@@ -2,6 +2,7 @@ from typing import Any
 
 from fastapi import Depends, Request
 
+from packages.core.bootstrap_runtime.contracts.service_graph import ServiceGraph
 from packages.features.llm_gateway.contracts import LLMGatewayContract
 from semantic_context_server.application.ports.event_bus import EventBus
 from semantic_context_server.application.ports.executor import ExecutorPort
@@ -14,6 +15,9 @@ from semantic_context_server.application.runtime.campaign_runtime import Campaig
 
 
 def get_runtime(request: Request) -> AppRuntime:
+    graph = getattr(request.app.state, "service_graph", None)
+    if isinstance(graph, ServiceGraph) and graph.has(AppRuntime):
+        return graph.resolve(AppRuntime)
     result: AppRuntime = request.app.state.runtime
     return result
 
@@ -29,13 +33,9 @@ def get_container(request: Request) -> Any:
         container = getattr(request.state, "container", None)
     except AttributeError:
         container = None
-    if container is None:
-        try:
-            runtime = getattr(getattr(request.app, "state", None), "runtime", None)
-            container = getattr(runtime, "container", None)
-        except AttributeError:
-            container = None
-    return container
+    if container is not None:
+        return container
+    return getattr(getattr(request.app, "state", None), "container", None)
 
 
 # ==========================================================
@@ -44,6 +44,14 @@ def get_container(request: Request) -> Any:
 
 
 async def get_event_bus(request: Request) -> Any:
+    graph = getattr(getattr(request.app, "state", None), "service_graph", None)
+    if isinstance(graph, ServiceGraph):
+        try:
+            if graph.has(EventBus):
+                return graph.resolve(EventBus)
+        except Exception:
+            pass
+
     container = get_container(request)
     if container is None:
         return None
@@ -57,6 +65,14 @@ async def get_event_bus(request: Request) -> Any:
 
 
 async def get_executor(request: Request) -> Any:
+    graph = getattr(getattr(request.app, "state", None), "service_graph", None)
+    if isinstance(graph, ServiceGraph):
+        try:
+            if graph.has(ExecutorPort):
+                return graph.resolve(ExecutorPort)
+        except Exception:
+            pass
+
     container = get_container(request)
     if container is None:
         return None
@@ -67,6 +83,14 @@ async def get_executor(request: Request) -> Any:
 
 
 async def get_llm(request: Request) -> Any:
+    graph = getattr(getattr(request.app, "state", None), "service_graph", None)
+    if isinstance(graph, ServiceGraph):
+        try:
+            if graph.has(LLMGatewayContract):
+                return graph.resolve(LLMGatewayContract)
+        except Exception:
+            pass
+
     container = get_container(request)
     if container is None:
         return None

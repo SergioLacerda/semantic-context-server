@@ -1,6 +1,6 @@
 from typing import Any
 
-from semantic_context_server.config.loader import LLMSettings
+from packages.core.runtime_config.loader import LLMSettings
 
 
 def create_llm_provider(settings: LLMSettings) -> Any:

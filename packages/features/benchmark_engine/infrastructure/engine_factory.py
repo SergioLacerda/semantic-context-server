@@ -2,12 +2,34 @@ import asyncio
 import os
 import random
 from collections.abc import Iterable
+from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor
+from enum import Enum
+from functools import partial
 from typing import Any, Protocol
 
 from packages.features.benchmark_engine.infrastructure.retrieval_adapter import (
     RetrievalAdapter,
 )
-from semantic_context_server.infrastructure.runtime.execution.executor import Executor, ExecutorType
+
+
+class ExecutorType(str, Enum):
+    THREAD = "thread"
+    PROCESS = "process"
+
+
+class Executor:
+    def __init__(self, mode: ExecutorType, max_workers: int | None = None) -> None:
+        self.mode = mode
+        self.max_workers = max_workers
+        self._pool = (
+            ProcessPoolExecutor(max_workers=max_workers)
+            if mode == ExecutorType.PROCESS
+            else ThreadPoolExecutor(max_workers=max_workers)
+        )
+
+    async def run(self, fn: Any, *args: Any) -> Any:
+        loop = asyncio.get_running_loop()
+        return await loop.run_in_executor(self._pool, partial(fn, *args))
 
 # ==================================================
 # PROTOCOL (contrato mínimo)

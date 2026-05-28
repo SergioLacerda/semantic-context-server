@@ -40,6 +40,9 @@ class CampaignHarness(BaseHarness):
     ):
         if campaign_id not in self._campaigns:
             root = self._get_root(factory)
+            if hasattr(root, "start") and not getattr(root, "_harness_started", False):
+                await root.start()
+                root._harness_started = True
 
             campaign = root.campaigns.get(campaign_id)
 

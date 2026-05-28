@@ -2,7 +2,7 @@ from typing import Any
 
 import pytest
 
-from packages.features.rpg_engine.dice_usecase import DiceUseCase
+from packages.features.dice_engine import DiceUseCase
 
 
 class MockRng:

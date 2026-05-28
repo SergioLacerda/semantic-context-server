@@ -11,7 +11,7 @@ from tests.config.fakes.application.memory.fake_memory_repository import FakeMem
 
 @pytest.fixture
 def repo():
-    from semantic_context_server.domain.narrative.narrative_memory import NarrativeMemory
+    from packages.features.rpg_engine.domain.narrative.narrative_memory import NarrativeMemory
 
     class NarrativeMemoryMock(FakeMemoryRepository):
         def __init__(self):

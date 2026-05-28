@@ -1,7 +1,7 @@
 import pytest
 
-from semantic_context_server.application.services.memory_service import MemoryService
-from semantic_context_server.domain.narrative.narrative_memory import NarrativeMemory
+from packages.features.rpg_engine.domain.narrative.narrative_memory import NarrativeMemory
+from packages.features.rpg_engine.memory_service import MemoryService
 from tests.config.fakes.application.memory.fake_memory_repository import (
     FakeMemoryRepository,
 )

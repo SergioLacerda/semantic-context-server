@@ -1,7 +1,7 @@
 import pytest
 
 from packages.features.llm_gateway.contracts import LLMGatewayContract
-from semantic_context_server.application.dto.llm_request import LLMRequest
+from packages.features.llm_gateway.dto import LLMRequest
 from tests.config.composition.test_container_builder import ContainerTestFactory
 from tests.config.fakes.infrastructure.llm.fake_llm_service import FakeLLMService
 

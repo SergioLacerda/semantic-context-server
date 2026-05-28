@@ -1,6 +1,62 @@
 from __future__ import annotations
 
-from typing import Any, Protocol, runtime_checkable
+from collections.abc import Mapping
+from typing import Any, Generic, Protocol, TypeVar, runtime_checkable
+
+
+# ---------------------------------------------------------------------------
+# Storage contracts (formerly semantic_context_server.application.ports.storage)
+# ---------------------------------------------------------------------------
+
+_T = TypeVar("_T")
+
+
+@runtime_checkable
+class KeyValueStorePort(Protocol, Generic[_T]):
+    async def get(self, key: str) -> _T | None: ...
+    async def set(self, key: str, value: _T) -> None: ...
+    async def delete(self, key: str) -> None: ...
+    async def clear(self) -> None: ...
+
+
+@runtime_checkable
+class VectorStorePort(Protocol):
+    async def add(
+        self,
+        doc_id: str,
+        vector: list[float],
+        metadata: dict[str, Any] | None = None,
+    ) -> None: ...
+    async def get(self, doc_id: str) -> list[float] | None: ...
+    async def search(self, vector: list[float], limit: int = 5) -> list[str]: ...
+    async def clear(self) -> None: ...
+    async def keys(self) -> list[str]: ...
+
+
+@runtime_checkable
+class DocumentStorePort(Protocol):
+    async def set(self, key: str, value: Mapping[str, Any]) -> None: ...
+    async def get(self, key: str) -> dict[str, Any] | None: ...
+    async def clear(self) -> None: ...
+
+
+@runtime_checkable
+class MetadataStorePort(Protocol):
+    async def set(self, key: str, value: dict[str, Any]) -> None: ...
+    async def get(self, key: str) -> dict[str, Any] | None: ...
+    async def clear(self) -> None: ...
+
+
+@runtime_checkable
+class TokenStorePort(Protocol):
+    async def set(self, key: str, value: Any) -> None: ...
+    async def get(self, key: str) -> Any: ...
+    async def clear(self) -> None: ...
+
+
+# ---------------------------------------------------------------------------
+# Vector index domain contracts
+# ---------------------------------------------------------------------------
 
 
 @runtime_checkable

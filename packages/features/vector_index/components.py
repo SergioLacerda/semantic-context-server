@@ -4,8 +4,8 @@ from collections.abc import Iterable
 from dataclasses import dataclass, field
 from typing import Any, Protocol, runtime_checkable
 
-from semantic_context_server.application.ports.executor import ExecutorPort
-from semantic_context_server.application.ports.storage import (
+from packages.core.shared_kernel.execution import ExecutorPort
+from packages.features.vector_index.contracts import (
     DocumentStorePort,
     MetadataStorePort,
     TokenStorePort,

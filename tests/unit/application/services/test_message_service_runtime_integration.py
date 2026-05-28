@@ -2,10 +2,10 @@ from types import SimpleNamespace
 
 import pytest
 
+from packages.core.bootstrap_runtime.concurrency import SafeExecutor as Executor
+from packages.core.bootstrap_runtime.runtime_scope import InteractionState
 from semantic_context_server.application.contracts.response import Response
 from semantic_context_server.application.services.message_service import MessageService
-from semantic_context_server.infrastructure.runtime.execution.executor import Executor
-from semantic_context_server.infrastructure.runtime.interaction_state import InteractionState
 from tests.config.factories.framework.context import make_context
 
 

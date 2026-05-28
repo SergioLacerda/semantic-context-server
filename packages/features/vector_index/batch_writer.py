@@ -3,7 +3,7 @@ import logging
 from dataclasses import dataclass
 from typing import Any
 
-from semantic_context_server.application.ports.executor import ExecutorPort
+from packages.core.shared_kernel.execution import ExecutorPort
 from packages.features.vector_index.components import VectorWriter
 
 logger = logging.getLogger(__name__)

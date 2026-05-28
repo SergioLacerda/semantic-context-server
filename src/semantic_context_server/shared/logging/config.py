@@ -2,7 +2,7 @@
 
 import logging
 
-from semantic_context_server.config.loader import load_settings
+from packages.core.runtime_config.loader import load_settings
 
 
 def setup_logging() -> None:

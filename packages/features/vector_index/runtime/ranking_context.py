@@ -1,7 +1,7 @@
 from collections.abc import Callable
 from dataclasses import dataclass, field
 
-from semantic_context_server.application.ports.executor import ExecutorPort
+from packages.core.shared_kernel.execution import ExecutorPort
 from packages.features.vector_index.contracts import VectorReaderPort
 
 

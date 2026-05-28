@@ -2,8 +2,8 @@ import asyncio
 
 import pytest
 
-from semantic_context_server.application.dto.llm_response import LLMResponse
-from semantic_context_server.usecases.end_session import EndSessionUseCase
+from packages.features.llm_gateway.dto import LLMResponse
+from packages.features.rpg_engine import EndSessionUseCase
 from tests.config.fakes.application.memory.fake_memory_for_end_session import FakeEndSessionMemory
 from tests.config.fakes.infrastructure.vector.fake_vector_memory import FakeVectorMemory
 

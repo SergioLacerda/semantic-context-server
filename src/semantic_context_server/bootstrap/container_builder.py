@@ -1,43 +1,68 @@
 from types import SimpleNamespace
 from typing import Any, cast
 
+from packages.core.bootstrap_runtime.concurrency.safe_executor import SafeExecutor as Executor
+from packages.core.bootstrap_runtime.runtime_scope import RuntimeScopeManager
+from packages.core.runtime_config.loader import load_settings
+from packages.features.dice_engine import (
+    DiceUseCase,
+    DomainDiceDistributionAnalyzerAdapter,
+    DomainDiceParserAdapter,
+    DomainDiceRollerAdapter,
+)
 from packages.features.embedding_gateway.contracts import (
     EmbeddingGatewayContract as EmbeddingGateway,
 )
 from packages.features.llm_gateway.application.llm_service import LLMService
 from packages.features.llm_gateway.contracts import LLMGatewayContract
 from packages.features.llm_gateway.infrastructure.provider_factory import create_llm_provider
+from packages.features.prompt_engine_core.session_summarizer import SessionSummarizer
 from packages.features.rpg_engine import (
-    DiceUseCase,
-    DomainDiceDistributionAnalyzerAdapter,
-    DomainDiceParserAdapter,
-    DomainDiceRollerAdapter,
+    EndSessionUseCase,
+    NarrativeUseCase,
 )
+from packages.features.rpg_engine.context_builder import ContextBuilder
+from packages.features.rpg_engine.infrastructure.narrative_memory_repository import (
+    NarrativeMemoryRepository,
+)
+from packages.features.rpg_engine.memory_service import MemoryService
 from packages.features.semantic_cache.implementations import EmbeddingCache, SemanticCache
 from packages.features.storage import (
     CampaignStorageProviderContract,
     CampaignStorageService,
     LegacyCampaignStorageFactory,
 )
+from packages.features.vector_index.contracts import VectorReaderPort, VectorWriterPort
+from packages.features.vector_index.reader import VectorReaderService
+from packages.features.vector_index.writer import VectorWriterService
 from semantic_context_server.application.dispatch.application_registry import ApplicationRegistry
 from semantic_context_server.application.ports.event_bus import EventBus as EventBusPort
 
 # Ports
 from semantic_context_server.application.ports.executor import ExecutorPort
-from semantic_context_server.application.runtime.campaign_manager import CampaignManager
 from semantic_context_server.application.runtime.campaign_runtime import CampaignRuntime
-from semantic_context_server.application.usecases.end_session_usecase import EndSessionUseCase
 from semantic_context_server.bootstrap.container import Container
-from semantic_context_server.config.loader import load_settings
 from semantic_context_server.infrastructure.events.blinker_event_bus import BlinkerEventBus
 from semantic_context_server.infrastructure.random.default_random import DefaultRandomProvider
 
 # Infra
 from semantic_context_server.infrastructure.runtime.bus.event_bus import EventBus as AsyncEventBus
-from semantic_context_server.infrastructure.runtime.executor.executor import Executor
-from semantic_context_server.modules.memory_module import MemoryModule
-from semantic_context_server.modules.narrative_module import NarrativeModule
-from semantic_context_server.modules.rag_module import RAGModule
+
+
+class _CampaignAdapter:
+    """Backward-compat single-arg campaign API backed by RuntimeScopeManager."""
+
+    def __init__(self, scope_manager: RuntimeScopeManager) -> None:
+        self._scope_manager = scope_manager
+
+    async def get(self, campaign_id: str) -> Any:
+        return await self._scope_manager.get("rpg", f"campaign:{campaign_id}")
+
+    async def clear(self, campaign_id: str) -> None:
+        await self._scope_manager.clear("rpg", f"campaign:{campaign_id}")
+
+    async def shutdown(self) -> None:
+        await self._scope_manager.shutdown()
 
 
 class _DictKV:
@@ -60,7 +85,10 @@ class _DictKV:
 
 
 class ContainerBuilder:
-    """Fluent builder for the DI container."""
+    """Fluent builder for the DI container.
+
+    Compat shim — to be removed after BOOTSTRAP_RUNTIME=v2 is default.
+    """
 
     def __init__(self) -> None:
         self._llm: Any | None = None
@@ -92,7 +120,15 @@ class ContainerBuilder:
             return SemanticCache(kv_store=_DictKV())
 
     def _build_storage_provider(self, storage_config: Any, executor: ExecutorPort) -> Any:
-        factory = LegacyCampaignStorageFactory(storage_config, executor)
+        from semantic_context_server.infrastructure.storage.campaign_storage_factory import (
+            build_campaign_storage,
+        )
+
+        factory = LegacyCampaignStorageFactory(
+            storage_config,
+            executor,
+            builder=build_campaign_storage,
+        )
         return CampaignStorageService(factory)
 
     def build(
@@ -145,9 +181,89 @@ class ContainerBuilder:
                 "command_bus": container.command_bus,
                 "embedding": self._embedding,
             }
-            services.update(RAGModule.build(container, ctx))
-            services["memory"] = MemoryModule.build(container, ctx, services)
-            services["narrative"] = NarrativeModule.build(container, ctx, services)
+            # --- RAG (vector reader / writer) ---
+            try:
+                reader_index = container.resolve(VectorReaderPort)
+                writer_index = container.resolve(VectorWriterPort)
+                services["vector_reader"] = VectorReaderService(vector_index=reader_index)
+                services["vector_writer"] = VectorWriterService(
+                    vector_index=writer_index, managed=True
+                )
+                services["vector_index"] = writer_index
+            except KeyError:
+
+                class _NullVectorReader:
+                    async def search(  # noqa: ARG002
+                        self,
+                        campaign_id: str,
+                        query: str,
+                        k: int = 5,
+                        filters: dict[str, Any] | None = None,
+                    ) -> list[dict[str, Any]]:
+                        return []
+
+                class _NullVectorWriter:
+                    async def store_event(  # noqa: ARG002
+                        self, campaign_id: str, texts: list[str], metadata: dict
+                    ) -> None:
+                        return None
+
+                class _NullVectorIndex:
+                    def __init__(self) -> None:
+                        class _NullDocumentStore:
+                            async def get(self, key: str) -> dict | None:  # noqa: ARG002
+                                return None
+
+                        self.raw = SimpleNamespace(
+                            components=SimpleNamespace(
+                                vector_writer=_NullVectorWriter(),
+                                vector_reader=_NullVectorReader(),
+                                document_store=_NullDocumentStore(),
+                            )
+                        )
+
+                    async def index_campaign(  # noqa: ARG002
+                        self,
+                        campaign_id: str,
+                        texts: list[str],
+                        metadata: dict[str, Any] | None = None,
+                    ) -> None:
+                        return None
+
+                    async def search(self, query: str, k: int = 4) -> list[dict]:  # noqa: ARG002
+                        return []
+
+                    async def search_with_metadata(self, query: str, k: int = 4) -> list[dict]:  # noqa: ARG002
+                        return []
+
+                services["vector_reader"] = _NullVectorReader()
+                services["vector_writer"] = _NullVectorWriter()
+                services["vector_index"] = _NullVectorIndex()
+
+            # --- Memory ---
+            kv_backend = ctx.kv
+            if hasattr(kv_backend, "build_kv_store"):
+                kv_store = kv_backend.build_kv_store("narrative_memory")
+            else:
+                kv_store = kv_backend.build_document_store()
+            services["memory"] = MemoryService(
+                repository=NarrativeMemoryRepository(kv_store),
+                campaign_id=ctx.id,
+                summarizer=SessionSummarizer(),
+                llm_service=container.resolve(LLMGatewayContract),
+                executor=container.resolve(ExecutorPort),
+                vector_reader=services.get("vector_reader"),
+                vector_writer=services.get("vector_writer"),
+                narrative_graph=services.get("narrative_graph"),
+            )
+
+            # --- Narrative ---
+            _memory = services["memory"]
+            services["narrative"] = NarrativeUseCase(
+                llm=container.resolve(LLMGatewayContract),
+                memory_service=_memory,
+                context_builder=ContextBuilder(memory_service=_memory),
+            )
             services["embedding_cache"] = EmbeddingCache(kv_store=_DictKV(), client=self._embedding)
             services["semantic_cache"] = self._build_semantic_cache()
             services["roll_dice"] = DiceUseCase(
@@ -166,8 +282,13 @@ class ContainerBuilder:
             )
             return CampaignRuntime(cid, services)
 
-        manager = CampaignManager(builder=SimpleNamespace(build_campaign=build_campaign))
-        container.campaigns = manager
+        async def _build_scope_runtime(_world_id: str, scope_id: str) -> CampaignRuntime:
+            return await build_campaign(scope_id.removeprefix("campaign:"))
+
+        scope_manager = RuntimeScopeManager(
+            builder=SimpleNamespace(build_scope_runtime=_build_scope_runtime)
+        )
+        container.campaigns = _CampaignAdapter(scope_manager)
 
         # Lifecycle helpers
         async def _start() -> None:
@@ -202,6 +323,7 @@ class ContainerBuilder:
 
     # ── legacy tuple API (used by lifecycle.py) ───────────────
 
-    def build_tuple(self) -> tuple["Container", Any]:
+    def build_tuple(self) -> tuple["Container", RuntimeScopeManager]:
         container = self.build()
-        return container, container.campaigns
+        adapter: _CampaignAdapter = container.campaigns  # type: ignore[assignment]
+        return container, adapter._scope_manager

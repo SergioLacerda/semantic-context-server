@@ -1,7 +1,7 @@
 # tests/utils/assertions.py
 
 from packages.features.prompt_engine_rpg.rpg_prompt_engine import RPGPromptEngine
-from semantic_context_server.application.contracts.response import Response
+from packages.features.rpg_engine.response import Response
 from tests.config.helpers.golden_assert import normalize
 
 # ==========================================================

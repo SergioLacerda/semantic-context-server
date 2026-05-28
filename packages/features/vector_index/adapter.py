@@ -1,7 +1,7 @@
 import asyncio
 from typing import Any
 
-from semantic_context_server.application.ports.executor import ExecutorPort
+from packages.core.shared_kernel.execution import ExecutorPort
 from packages.features.vector_index.contracts import VectorIndexGateway
 from packages.core.shared_kernel.hash_utils import sha256_hash
 

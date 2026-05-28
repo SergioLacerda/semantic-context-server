@@ -11,7 +11,8 @@ import time
 
 import pytest
 
-from semantic_context_server.infrastructure.runtime.execution.executor import Executor, ExecutorType
+from packages.core.bootstrap_runtime.concurrency.safe_executor import ExecutorType
+from packages.core.bootstrap_runtime.concurrency.safe_executor import SafeExecutor as Executor
 
 
 @pytest.mark.asyncio
@@ -70,7 +71,7 @@ async def test_executor_without_timeout_completes():
 @pytest.mark.asyncio
 async def test_executor_timeout_config_from_settings(container_factory):
     """P0-URGENT: Validar que timeout é carregado via settings."""
-    from semantic_context_server.config.loader import load_settings
+    from packages.core.runtime_config.loader import load_settings
 
     settings = load_settings()
 

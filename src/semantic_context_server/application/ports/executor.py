@@ -1,13 +1,3 @@
-from collections.abc import Callable
-from typing import Any, Protocol, runtime_checkable
+from packages.core.shared_kernel.execution import ExecutorPort
 
-
-@runtime_checkable
-class ExecutorPort(Protocol):
-    async def start(self) -> None: ...
-
-    async def shutdown(self) -> None: ...
-
-    async def run_async(self, fn: Callable[..., Any], *args: Any) -> Any: ...
-
-    async def run(self, fn: Callable[..., Any], *args: Any) -> Any: ...
+__all__ = ["ExecutorPort"]

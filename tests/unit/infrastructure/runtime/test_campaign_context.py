@@ -1,65 +1,65 @@
 import pytest
 
-from semantic_context_server.infrastructure.runtime.campaign_context import CampaignContext
+from packages.core.bootstrap_runtime.runtime_scope import ScopeContext
 
 
 def test_set_and_get():
-    ctx = CampaignContext()
+    ctx = ScopeContext()
 
-    ctx.set_campaign("abc")
+    ctx.set_scope("world1", "campaign:abc")
 
-    assert ctx.get_campaign() == "abc"
+    assert ctx.get_scope() == ("world1", "campaign:abc")
 
 
 def test_get_without_set():
-    ctx = CampaignContext()
+    ctx = ScopeContext()
 
     ctx.reset()
 
     with pytest.raises(RuntimeError):
-        ctx.get_campaign()
+        ctx.get_scope()
 
 
-def test_reset_with_token():
-    ctx = CampaignContext()
+def test_reset_with_tokens():
+    ctx = ScopeContext()
 
     ctx.reset()
 
-    token = ctx.set_campaign("abc")
+    tokens = ctx.set_scope("world1", "campaign:abc")
 
-    ctx.reset(token)
+    ctx.reset(tokens)
 
     with pytest.raises(RuntimeError):
-        ctx.get_campaign()
+        ctx.get_scope()
 
 
-def test_reset_without_token():
-    ctx = CampaignContext()
+def test_reset_without_tokens():
+    ctx = ScopeContext()
 
-    ctx.set_campaign("abc")
+    ctx.set_scope("world1", "campaign:abc")
     ctx.reset()
 
     with pytest.raises(RuntimeError):
-        ctx.get_campaign()
+        ctx.get_scope()
 
 
 def test_scope():
-    ctx = CampaignContext()
+    ctx = ScopeContext()
 
-    with ctx.scope("xyz") as cid:
-        assert cid == "xyz"
-        assert ctx.get_campaign() == "xyz"
+    with ctx.scope("world1", "scope-xyz") as (wid, sid):
+        assert wid == "world1"
+        assert sid == "scope-xyz"
+        assert ctx.get_scope() == ("world1", "scope-xyz")
 
-    # saiu do contexto → reset automático
     with pytest.raises(RuntimeError):
-        ctx.get_campaign()
+        ctx.get_scope()
 
 
 def test_context_is_isolated():
-    ctx = CampaignContext()
+    ctx = ScopeContext()
 
-    with ctx.scope("a"):
-        assert ctx.get_campaign() == "a"
+    with ctx.scope("world1", "scope-a"):
+        assert ctx.get_scope() == ("world1", "scope-a")
 
-    with ctx.scope("b"):
-        assert ctx.get_campaign() == "b"
+    with ctx.scope("world1", "scope-b"):
+        assert ctx.get_scope() == ("world1", "scope-b")

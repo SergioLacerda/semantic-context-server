@@ -28,6 +28,7 @@ from tests.config.fakes.infrastructure.embedding.fake_embedding_provider import 
 )
 from tests.config.fakes.infrastructure.llm.fake_llm_service import FakeLLMService
 from tests.config.fakes.infrastructure.storage.fake_storage_config import FakeStorageConfig
+from tests.config.helpers.inline_executor import InlineExecutor
 
 
 class ContainerTestFactory:
@@ -54,6 +55,7 @@ class ContainerTestFactory:
                 intent=FakeIntentClassifier(llm_classifier=FakeLLMIntentClassifier()),
                 base_path=self._build_path(campaign_id),
                 time_provider=FakeTimeProvider(),
+                executor=InlineExecutor(),
             )
 
         self._state = state
