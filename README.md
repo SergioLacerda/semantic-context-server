@@ -22,19 +22,20 @@ Semantic Context Server is a **modular semantic compression server** focused on:
 - 🤖 Integrating with LLM agents through reusable interfaces
 - 🧩 Supporting agent workflows for developers and RPG players
 
-> This is **not a chatbot** — it is a **context optimization platform**.
-
 ---
 
 ## ⚠️ Project Status
 
-This repository is currently under active refactoring.
+### Refactoring Progress (Status 1/10)
+- **Current state (1/10):** Monolith + Clean Architecture
+- **Target state:** Transition to a **Mono‑repo** structure while retaining Clean Architecture
+- **Goal:** Incrementally separate concerns into independent packages/modules, improving scalability, maintainability, and team autonomy.
 
-- Core architecture boundaries are being tightened.
-- Internal modules and extension points may change until stabilization.
-- CI, tests, and coverage remain the primary safety gates during this phase.
-
-For production usage, prefer pinned commits/tags instead of tracking `main` directly.
+### Architectural Evolution
+| Phase | Architecture | Description |
+|------|----------------|-------------|
+| **Current** | Monolith + Clean Architecture | All services reside in a single codebase, with layers (entities, use‑cases, interfaces) enforced by Clean Architecture.
+| **Next** | Mono‑repo + Clean Architecture | The codebase will be reorganised into multiple, tightly‑coupled packages within a single repository, each adhering to Clean Architecture.
 
 ---
 
