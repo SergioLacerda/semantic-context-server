@@ -1,6 +1,6 @@
 import pytest
 
-from semantic_context_server.application.contracts.response import Response
+from packages.features.rpg_engine.response import Response
 from tests.config.fakes.infrastructure.llm.fake_llm_service import FakeLLMService
 from tests.config.harness.narrative_harness import NarrativeHarness
 from tests.utils.assertions import (

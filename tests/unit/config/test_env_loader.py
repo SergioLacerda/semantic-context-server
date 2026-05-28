@@ -2,7 +2,7 @@ import os
 
 import pytest
 
-from semantic_context_server.config.env_loader import (
+from packages.core.runtime_config.env import (
     DEFAULT_ENVIRONMENT,
     ENV_FILE_BASE,
     ENV_FILE_LOCAL,
@@ -71,7 +71,7 @@ def test_load_environment_loads_existing_files(tmp_path, monkeypatch):
     write_text_utf8(env_test_file, "TEST_VAR=test")
 
     # Mock ROOT to use tmp_path
-    monkeypatch.setattr("semantic_context_server.config.env_loader.ROOT", tmp_path)
+    monkeypatch.setattr("packages.core.runtime_config.env.ROOT", tmp_path)
     monkeypatch.setenv("ENVIRONMENT", "test")
 
     env, loaded_files, cli_overrides = load_environment()

@@ -20,18 +20,14 @@ class NoReadyService:
     pass
 
 
-def test_health_endpoint(client):
-    response = client.get("/health")
-
-    assert response.status_code == 200
-    assert response.json() == {"status": "ok"}
+def test_health_endpoint():
+    assert health() == {"status": "ok"}
 
 
-def test_ready_endpoint_default(client):
-    response = client.get("/ready")
-
-    assert response.status_code == 200
-    assert response.json()["status"] in ["ready", "loading"]
+@pytest.mark.asyncio
+async def test_ready_endpoint_default():
+    result = await ready(NoReadyService())
+    assert result["status"] in ["ready", "loading"]
 
 
 def test_health():

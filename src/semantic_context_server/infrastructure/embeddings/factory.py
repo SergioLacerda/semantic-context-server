@@ -1,9 +1,9 @@
 from typing import Any, cast
 
+from packages.core.runtime_config.loader import EmbeddingSettings
 from packages.features.embedding_gateway.contracts import (
     EmbeddingGatewayContract as EmbeddingGateway,
 )
-from semantic_context_server.config.loader import EmbeddingSettings
 from semantic_context_server.infrastructure.embeddings.service.embedding_service import (
     EmbeddingService,
 )

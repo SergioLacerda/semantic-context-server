@@ -5,6 +5,7 @@ from packages.features.llm_gateway.application.llm_errors import (
     LLMClientError,
     LLMRetryableError,
 )
+from packages.features.llm_gateway.dto import LLMRequest
 from packages.features.llm_gateway.infrastructure.base_provider import BaseProvider
 from packages.features.llm_gateway.infrastructure.providers.deepseek_provider import (
     DeepSeekProvider,
@@ -14,7 +15,6 @@ from packages.features.llm_gateway.infrastructure.providers.lmstudio_provider im
 )
 from packages.features.llm_gateway.infrastructure.providers.ollama_provider import OllamaProvider
 from packages.features.llm_gateway.infrastructure.providers.openai_provider import OpenAIProvider
-from semantic_context_server.application.dto.llm_request import LLMRequest
 from tests.config.fakes.infrastructure.llm.fake_responses import (
     FakeOllamaResponse,
     FakeResponseEmpty,

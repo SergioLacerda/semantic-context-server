@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from semantic_context_server.config.paths import get_campaign_path
+from packages.core.runtime_config.paths import get_campaign_path
 
 
 class CampaignContext:

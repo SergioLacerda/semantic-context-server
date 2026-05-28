@@ -11,7 +11,7 @@ import signal
 
 import pytest
 
-from semantic_context_server.bootstrap.lifecycle import _setup_signal_handlers
+from packages.core.bootstrap_runtime.lifecycle import setup_signal_handlers
 
 # Verifica se estamos rodando via xdist worker
 IS_XDIST = os.environ.get("PYTEST_XDIST_WORKER") is not None
@@ -20,7 +20,7 @@ IS_XDIST = os.environ.get("PYTEST_XDIST_WORKER") is not None
 @pytest.mark.skipif(IS_XDIST, reason="Signal handler tests can hang xdist workers")
 def test_signal_handlers_installed():
     """
-    P0-URGENT: Validar que _setup_signal_handlers() instala
+    P0-URGENT: Validar que setup_signal_handlers() instala
     handlers corretamente.
     """
     # Guardar handlers originais
@@ -29,7 +29,7 @@ def test_signal_handlers_installed():
 
     try:
         # Chamar setup
-        _setup_signal_handlers()
+        setup_signal_handlers()
 
         # Validar SIGCHLD foi instalado
         sigchld_handler = signal.getsignal(signal.SIGCHLD)
@@ -85,7 +85,7 @@ def test_signal_handlers_preserves_existing_handlers():
 
     try:
         # Chamar setup que vai sobrescrever
-        _setup_signal_handlers()
+        setup_signal_handlers()
 
         # Validar que foi sobrescrito com SIG_DFL (esperado)
         final_handler = signal.getsignal(signal.SIGCHLD)

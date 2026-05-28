@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from collections.abc import Callable
 from typing import Any
 
 from packages.features.storage.contracts import CampaignStorageFactoryContract
@@ -25,15 +26,20 @@ class CampaignStorageService:
 
 
 class LegacyCampaignStorageFactory:
-    """Compatibility factory that delegates to current legacy storage builder."""
+    """Compatibility factory with injected legacy builder from composition root."""
 
-    def __init__(self, config: Any, executor: Any) -> None:
+    def __init__(
+        self,
+        config: Any,
+        executor: Any,
+        *,
+        builder: Callable[[Any, str, Any], Any] | None = None,
+    ) -> None:
         self._config = config
         self._executor = executor
+        self._builder = builder
 
     def build(self, campaign_id: str) -> Any:
-        from semantic_context_server.infrastructure.storage.campaign_storage_factory import (
-            build_campaign_storage,
-        )
-
-        return build_campaign_storage(self._config, campaign_id, self._executor)
+        if self._builder is None:
+            raise RuntimeError("LegacyCampaignStorageFactory requires a storage builder callable.")
+        return self._builder(self._config, campaign_id, self._executor)

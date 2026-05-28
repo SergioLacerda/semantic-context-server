@@ -1,4 +1,4 @@
-from semantic_context_server.application.dto.llm_response import LLMResponse
+from packages.features.llm_gateway.dto import LLMResponse
 
 
 class FakeLLMResponseFactory:

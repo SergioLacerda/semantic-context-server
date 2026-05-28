@@ -1,0 +1,13 @@
+from __future__ import annotations
+
+from typing import Any, Generic, Protocol, TypeVar, runtime_checkable
+
+_T = TypeVar("_T")
+
+
+@runtime_checkable
+class KeyValueStorePort(Protocol, Generic[_T]):
+    async def get(self, key: str) -> _T | None: ...
+    async def set(self, key: str, value: _T) -> None: ...
+    async def delete(self, key: str) -> None: ...
+    async def clear(self) -> None: ...

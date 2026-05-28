@@ -3,8 +3,8 @@ import logging
 from collections.abc import AsyncGenerator
 from typing import Any
 
-from semantic_context_server.application.dto.llm_request import LLMRequest
-from semantic_context_server.application.dto.llm_response import LLMResponse
+from packages.features.llm_gateway.dto import LLMRequest
+from packages.features.llm_gateway.dto import LLMResponse
 from packages.features.llm_gateway.contracts import LLMGatewayContract
 from packages.core.shared_kernel.hash_utils import sha256_hash
 from packages.core.shared_kernel.resilience import resilient_call

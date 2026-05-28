@@ -1,9 +1,9 @@
 import pytest
 
+from packages.core.bootstrap_runtime.runtime_scope import InteractionState
 from semantic_context_server.application.ports.interaction_runtime import InteractionRuntimePort
 from semantic_context_server.bootstrap.container import Container
 from semantic_context_server.bootstrap.modules.runtime_module import RuntimeModule
-from semantic_context_server.infrastructure.runtime.interaction_state import InteractionState
 
 
 class DummyPort:

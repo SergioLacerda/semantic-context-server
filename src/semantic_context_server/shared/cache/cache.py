@@ -5,7 +5,7 @@ from collections import OrderedDict
 from pathlib import Path
 from typing import Any
 
-from semantic_context_server.config.settings import settings
+from packages.core.runtime_config.models import settings
 
 
 def _hash_request(payload: dict[str, Any]) -> str:

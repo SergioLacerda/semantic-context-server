@@ -1,5 +1,5 @@
-from semantic_context_server.config.loader import load_settings
-from semantic_context_server.config.profile import DEFAULT_PROFILE
+from packages.core.runtime_config.loader import load_settings
+from packages.core.runtime_config.profile import DEFAULT_PROFILE
 
 
 def test_load_settings_uses_default_profile(monkeypatch):

@@ -2,9 +2,11 @@ import asyncio
 
 import pytest
 
-from semantic_context_server.infrastructure.runtime.execution.executor import (
-    Executor,
+from packages.core.bootstrap_runtime.concurrency.safe_executor import (
     ExecutorType,
+)
+from packages.core.bootstrap_runtime.concurrency.safe_executor import (
+    SafeExecutor as Executor,
 )
 
 # ==========================================================

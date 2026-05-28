@@ -3,7 +3,7 @@ import logging
 from dataclasses import dataclass, field
 from typing import Any
 
-from semantic_context_server.application.dto.benchmark_strategy import BenchmarkStrategy
+from packages.features.benchmark_engine.application.benchmark_strategy import BenchmarkStrategy
 from packages.features.benchmark_engine.contracts import BenchmarkRunnerContract as BenchmarkPort
 from packages.features.benchmark_engine.application.benchmark_analysis import (
     extract_winner,

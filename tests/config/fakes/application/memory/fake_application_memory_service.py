@@ -1,4 +1,4 @@
-from semantic_context_server.domain.narrative.narrative_memory import NarrativeMemory
+from packages.features.rpg_engine.domain.narrative.narrative_memory import NarrativeMemory
 
 
 class FakeApplicationMemoryService:

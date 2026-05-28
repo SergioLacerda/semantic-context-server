@@ -29,7 +29,7 @@ class MockDelegate(ModelDelegatePort):
 @pytest.fixture(scope="function")
 def cache_manager(tmp_path: Path) -> CacheManager:
     # Override the disk cache base_path to a temporary directory for isolation
-    from semantic_context_server.config.settings import settings
+    from packages.core.runtime_config.models import settings
 
     original_path = settings.cache.disk.base_path
     settings.cache.disk.base_path = str(tmp_path / "cache")

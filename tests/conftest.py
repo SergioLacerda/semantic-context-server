@@ -11,7 +11,7 @@ os.environ["ENVIRONMENT"] = "test"
 os.environ["DEVICE"] = "cpu"
 os.environ["ENV_FILE"] = "none"  # Desativa carga de .env no Pydantic Settings
 
-from semantic_context_server.config.loader import load_settings
+from packages.core.runtime_config.loader import load_settings
 
 load_settings.cache_clear()
 
@@ -20,8 +20,6 @@ import asyncio  # noqa: E402, I001
 import pytest  # noqa: E402
 from fastapi.testclient import TestClient  # noqa: E402
 
-from packages.interfaces.http_api import create_app  # noqa: E402
-from semantic_context_server.application.ports.executor import ExecutorPort  # noqa: E402
 from semantic_context_server.application.ports.storage_types import (  # noqa: E402
     StorageBackends,
     StorageKinds,
@@ -32,9 +30,14 @@ from semantic_context_server.infrastructure.storage.providers.storage_backend_re
 from semantic_context_server.infrastructure.storage.providers.storage_backend_registry_setup import (  # noqa: E402
     create_storage_backend_registry,
 )
+from fastapi import FastAPI  # noqa: E402
+from packages.interfaces.http_api.router import api_router  # noqa: E402
 from semantic_context_server.interfaces.api.dependencies import (  # noqa: E402
     get_command_bus,
     get_container,
+)
+from semantic_context_server.interfaces.api.middleware.request_context_middleware import (  # noqa: E402
+    request_context_middleware,
 )
 from tests.config.composition.test_container_builder import ContainerTestFactory  # noqa: E402
 from tests.config.fakes.infrastructure.storage.fake_storage_config import FakeStorageConfig  # noqa: E402
@@ -179,7 +182,9 @@ def campaign_id():
 
 
 def build_test_app(container, campaign_id="c1"):
-    app = create_app()
+    app = FastAPI(title="RPG Narrative Server (tests)")
+    app.middleware("http")(request_context_middleware)
+    app.include_router(api_router)
 
     # --------------------------------------------------
     # CORE DI
@@ -264,14 +269,19 @@ def setup_storage_registry():
 
 
 @pytest.fixture
-async def vector_store(tmp_path, container):
+async def vector_store(tmp_path):
     """
     🔥 Retorna VectorStore REAL usando backend in-memory
     Respeita o Async Mandate e usa o Executor do container.
     """
     registry = get_global_registry()
     factory = registry.get(StorageBackends.MEMORY)
-    executor = container.resolve(ExecutorPort)
+
+    class _InlineExecutor:
+        async def run(self, fn, *args):
+            return fn(*args)
+
+    executor = _InlineExecutor()
 
     backend = factory(
         base_path=tmp_path,
@@ -287,8 +297,7 @@ async def vector_store(tmp_path, container):
 
     yield store
 
-    # Cleanup - ensure no pending tasks from this store
-    # The container fixture handles the executor cleanup
+    # No async executor resources to release for inline executor.
 
 
 @pytest.fixture(autouse=True)

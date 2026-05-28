@@ -1,7 +1,7 @@
 import pytest
 
-from semantic_context_server.domain.dice.ast.nodes import RerollNode
-from semantic_context_server.domain.dice.parser import DiceParser
+from packages.features.dice_engine.domain.dice.ast.nodes import RerollNode
+from packages.features.dice_engine.domain.dice.parser import DiceParser
 from semantic_context_server.interfaces.dice.tokenizer import normalize_expression
 
 
